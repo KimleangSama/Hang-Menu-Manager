@@ -1,7 +1,7 @@
-import { BaseResponse } from "@/types/base-response";
-import { StoreResponse } from "@/types/store-response";
+import { BaseResponse } from "../types/base-response";
+import { StoreResponse } from "../types/store-response";
 import { APIService } from "@/api/base";
-import { UpdateStoreRequest } from "@/types/request/update-store-request";
+import { UpdateStoreRequest } from "../types/request/update-store-request";
 
 class StoreService extends APIService {
     async updateStoreInfo(id: string, updateRequest: UpdateStoreRequest): Promise<BaseResponse<StoreResponse>> {

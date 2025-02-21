@@ -133,11 +133,4 @@ export const orderSideNav: SideNav[] = [
             },
         ],
     },
-
-    {
-        title: "Occupancy",
-        url: "/dashboard/occupancies",
-        icon: UtensilsCrossed,
-        isActive: false,
-    },
 ]

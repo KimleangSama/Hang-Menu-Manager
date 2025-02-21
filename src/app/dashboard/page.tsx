@@ -11,17 +11,48 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
+import { useStoreResponse } from "@/hooks/use-store"
+import { storeService } from "@/services/store-service"
 import { redirect } from "next/navigation"
+import { useEffect } from "react"
+import { toast } from "sonner"
 
 interface DashboardPageProps {
   children: React.ReactNode
 }
 
 export default function DashboardPage({ children }: DashboardPageProps) {
-  // const { user } = useAuth();
-  // if (!user) {
-  //   redirect('/auth/login');
-  // }
+  const { user } = useAuth();
+  if (!user) {
+    redirect('/auth/login');
+  }
+
+  const store = useStoreResponse((state) => state.store);
+
+  useEffect(() => {
+    if (!store) {
+      async function getStoreInfo() {
+        try {
+          const response = await storeService.getStoreOfUser();
+          console.log(response)
+          if (response.success) {
+            useStoreResponse.setState({ store: response.payload });
+          } else {
+            if (response.statusCode === 403 || response.statusCode === 401) {
+              toast.error('You are not authorized to access this page');
+              setTimeout(() => {
+                redirect('/auth/login');
+              }, 1500);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch store info:', error);
+        }
+      }
+      getStoreInfo();
+      toast.success('Welcome to the dashboard');
+    }
+  }, [store]);
 
   return (
     <SidebarProvider>

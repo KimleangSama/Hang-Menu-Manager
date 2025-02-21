@@ -1,7 +1,7 @@
 import { APIService } from "@/api/base";
-import { BaseResponse } from "@/types/base-response";
-import { MenuResponse } from "@/types/menu-response";
-import { CreateMenuFormData } from "@/types/request/create-menu-request";
+import { BaseResponse } from "../types/base-response";
+import { MenuResponse } from "../types/menu-response";
+import { CreateMenuFormData } from "../types/request/create-menu-request";
 
 class MenuService extends APIService {
     async createMenu(data: CreateMenuFormData): Promise<BaseResponse<MenuResponse>> {
@@ -13,9 +13,9 @@ class MenuService extends APIService {
             throw error
         }
     }
-    async listMenus(page: number, size: number): Promise<BaseResponse<MenuResponse[]>> {
+    async listMenus(storeId: string, page: number, size: number): Promise<BaseResponse<MenuResponse[]>> {
         try {
-            const response = await this.get<BaseResponse<MenuResponse[]>>(`/menus/list/all?page=${page}&limit=${size}`);
+            const response = await this.get<BaseResponse<MenuResponse[]>>(`/menus/of-store/${storeId}/list?page=${page}&limit=${size}`);
             return response;
         } catch (error) {
             console.error(error)

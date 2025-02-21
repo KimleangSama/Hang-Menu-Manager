@@ -1,5 +1,5 @@
-import { BaseResponse } from "@/types/base-response";
-import { FileResponse } from "@/types/request/file-response";
+import { BaseResponse } from "../types/base-response";
+import { FileResponse } from "../types/request/file-response";
 import axios from "axios";
 import { ACCESS_TOKEN, API_BASE_URL } from "@/constants/auth";
 

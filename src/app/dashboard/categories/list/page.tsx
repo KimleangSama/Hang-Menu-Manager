@@ -6,27 +6,31 @@ import TableListContextProvider, { TableListDialogType } from "@/providers/table
 import useDialogState from "@/hooks/use-dialog";
 import { toast } from "sonner";
 import Link from "next/link";
-import { CategoryResponse } from "@/types/category-response";
+import { CategoryResponse } from "../../../../types/category-response";
 import { categoryService } from "@/services/category-service";
 import { DataTable } from "@/components/categories/category-data";
 import { categoryColumns } from "@/components/categories/category-column";
+import { useStoreResponse } from "@/hooks/use-store";
 
 export default function ListCategoryPage() {
+    const store = useStoreResponse(state => state.store)
     const [categories, setCategories] = useState<CategoryResponse[]>([]);
     const [currentRow, setCurrentRow] = useState<CategoryResponse | null>(null)
     const [open, setOpen] = useDialogState<TableListDialogType>(null)
 
     useEffect(() => {
         async function fetchCategoryList() {
-            try {
-                const response = await categoryService.listCategories();
-                if (response.success) {
-                    setCategories(response.payload);
-                } else {
-                    toast.error(response.error);
+            if (store && store?.id) {
+                try {
+                    const response = await categoryService.listCategories(store?.id);
+                    if (response.success) {
+                        setCategories(response.payload);
+                    } else {
+                        toast.error(response.error);
+                    }
+                } catch (error) {
+                    toast.error(String(error));
                 }
-            } catch (error) {
-                toast.error(String(error));
             }
         }
         fetchCategoryList();

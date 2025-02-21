@@ -6,6 +6,7 @@ export const createCategorySchema = z.object({
     icon: z.string().optional(),
     hidden: z.boolean(),
     available: z.boolean(),
+    storeId: z.string().min(1, { message: "Store ID is required" }),
 });
 
 export type CreateCategoryFormData = z.infer<typeof createCategorySchema>;

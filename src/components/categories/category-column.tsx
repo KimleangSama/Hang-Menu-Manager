@@ -5,7 +5,7 @@ import LongText from '@/components/shared/text/long-text'
 import { API_BASE_URL } from '@/constants/auth'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { DataTableRowActions } from './category-row-action'
-import { CategoryResponse } from '@/types/category-response'
+import { CategoryResponse } from '../../types/category-response'
 
 export const categoryColumns: ColumnDef<CategoryResponse>[] = [
     {

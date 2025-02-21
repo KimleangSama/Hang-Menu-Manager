@@ -17,7 +17,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Clock, CreditCard, Plus, Minus, Save, Loader2, DollarSign, Copy } from "lucide-react";
-import { UpdateStoreFormValues, UpdateStoreRequest } from "@/types/request/update-store-request";
+import { UpdateStoreFormValues, UpdateStoreRequest } from "../../../../types/request/update-store-request";
 import { toast } from "sonner";
 import { mapUpdateStoreFormValues, resetUpdateStoreForm } from "@/lib/update-store";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";

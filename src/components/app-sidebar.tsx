@@ -16,7 +16,7 @@ import AppLogo from "./app-logo"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar className="z-0" collapsible="icon" {...props}>
       <SidebarHeader>
         <AppLogo />
       </SidebarHeader>

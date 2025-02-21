@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTableListContext } from '@/providers/table-list-provider'
 import { useRouter } from 'nextjs-toploader/app'
-import { CategoryResponse } from '@/types/category-response'
+import { CategoryResponse } from '../../types/category-response'
 
 interface DataTableRowActionsProps {
     row: Row<CategoryResponse>

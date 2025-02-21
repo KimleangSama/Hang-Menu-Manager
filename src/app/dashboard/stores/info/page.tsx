@@ -1,40 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import DashboardPage from "../../page";
-import { storeService } from "@/services/store-service";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Phone, Mail, CreditCard, Store, Globe } from "lucide-react";
 import { IoLogoFacebook, IoLogoInstagram } from "react-icons/io";
 import { FaTelegramPlane } from "react-icons/fa";
-import { Language, OperatingHour, OrderOption, PaymentMethod, StoreResponse } from "@/types/store-response";
+import { Language, OperatingHour, OrderOption, PaymentMethod } from "../../../../types/store-response";
+import { useStoreResponse } from "@/hooks/use-store";
 
 export default function StoreInfoPage() {
-    const [storeData, setStoreData] = useState<StoreResponse>();
+    const store = useStoreResponse((state) => state.store);
 
-    useEffect(() => {
-        async function getStoreInfo() {
-            try {
-                const response = await storeService.getStoreOfUser();
-                console.log(response)
-                if (response.success) {
-                    setStoreData(response.payload);
-                } else {
-                    console.error('Failed to fetch store info: ', response.error);
-                }
-            } catch (error) {
-                console.error('Failed to fetch store info:', error);
-            }
-        }
-        getStoreInfo();
-    }, []);
-
-    if (!storeData) {
+    if (!store) {
         return (
             <DashboardPage>
                 <div className="max-w-4xl mx-auto p-4 space-y-6">
-                    <h1 className="text-3xl font-bold">Loading...</h1>
+                    <h1 className="text-3xl font-bold">No Store Found</h1>
+                    <h3 className="text-lg">
+                        You do not have any store created yet. Please create a store to view store information.
+                    </h3>
                 </div>
             </DashboardPage>
         );
@@ -54,7 +39,7 @@ export default function StoreInfoPage() {
         telegram,
         color,
         storeInfoResponse
-    } = storeData
+    } = store;
     const { operatingHours, orderOptions, paymentMethods, languages } = storeInfoResponse;
 
     return (

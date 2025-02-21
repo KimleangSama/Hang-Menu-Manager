@@ -1,6 +1,6 @@
-import { BaseResponse } from "@/types/base-response";
-import { UpdateStoreFormValues } from "@/types/request/update-store-request";
-import { StoreResponse } from "@/types/store-response";
+import { BaseResponse } from "../types/base-response";
+import { UpdateStoreFormValues } from "../types/request/update-store-request";
+import { StoreResponse } from "../types/store-response";
 import { uuidv4 } from "./utils";
 
 export const resetUpdateStoreForm = (form: any, response: BaseResponse<StoreResponse>) => {

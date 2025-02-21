@@ -12,10 +12,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTableListContext } from '@/providers/table-list-provider'
 import { useRouter } from 'nextjs-toploader/app'
-import { MenuResponse } from '../../types/menu-response'
+import { OrderListResponse } from '@/types/order-response'
 
 interface DataTableRowActionsProps {
-    row: Row<MenuResponse>
+    row: Row<OrderListResponse>
 }
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
@@ -30,13 +30,13 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
                         className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
                     >
                         <DotsHorizontalIcon className='h-4 w-4' />
-                        <span className='sr-only'>Open menu</span>
+                        <span className='sr-only'>Open order</span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end' className='w-[100px]'>
                     <DropdownMenuItem
                         onClick={() => {
-                            router.push(`/dashboard/menus/${row.original.id}/view`)
+                            router.push(`/dashboard/orders/${row.original.id}/view`)
                         }}
                     >
                         View

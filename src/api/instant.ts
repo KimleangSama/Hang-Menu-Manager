@@ -14,7 +14,7 @@ const axiosInstant = axios.create({
 axiosInstant.interceptors.request.use(
     (config) => {
         const token = JSON.parse(localStorage.getItem(ACCESS_TOKEN) || '{}');
-        if (token && token.state.accessToken) {
+        if (token && token.state && token.state.accessToken) {
             config.headers['Authorization'] = `Bearer ${token.state.accessToken}`;
         }
         config.headers['Content-Type'] = 'application/json';

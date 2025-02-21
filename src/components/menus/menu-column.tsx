@@ -4,7 +4,7 @@ import { DataTableColumnHeader } from '@/components/shared/table/data-table-colu
 import LongText from '@/components/shared/text/long-text'
 import { API_BASE_URL } from '@/constants/auth'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { MenuResponse } from '@/types/menu-response'
+import { MenuResponse } from '../../types/menu-response'
 import { DataTableRowActions } from './menu-row-action'
 
 export const menuColumns: ColumnDef<MenuResponse>[] = [
@@ -20,12 +20,21 @@ export const menuColumns: ColumnDef<MenuResponse>[] = [
                 <Popover>
                     <PopoverTrigger>
                         <div className='flex items-center justify-center'>
-                            <img src={API_BASE_URL + "/files/view/" + image} alt='Menu Image' className='w-8 h-8' />
+                            <img
+                                src={API_BASE_URL + "/files/view/" + image}
+                                alt='Menu Image'
+                                className='w-8 h-8 rounded'
+                                onError={(e) => {
+                                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
+                                }}
+                            />
                         </div>
                     </PopoverTrigger>
-                    <PopoverContent className='w-92'>
+                    <PopoverContent className='w-[30%]'>
                         <div className='flex items-center justify-center'>
-                            <img src={API_BASE_URL + "/files/view/" + image} alt='Menu Image' className='w-full' />
+                            <img src={API_BASE_URL + "/files/view/" + image} alt='Menu Image' onError={(e) => {
+                                e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
+                            }} />
                         </div>
                     </PopoverContent>
                 </Popover>

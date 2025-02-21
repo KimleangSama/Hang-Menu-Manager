@@ -13,11 +13,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { z } from 'zod';
-import { CreateCategoryFormData, createCategorySchema } from '@/types/request/create-category-request';
+import { CreateCategoryFormData, createCategorySchema } from '../../../../types/request/create-category-request';
 import DashboardPage from '@/app/dashboard/page';
 import ImageUpload from '@/components/shared/form/image/image-upload';
+import { useStoreResponse } from '@/hooks/use-store';
 
 const CreateCategoryPage = () => {
+    const store = useStoreResponse(state => state.store);
     const [file, setFile] = useState<File | null>(null);
     const form = useForm<z.infer<typeof createCategorySchema>>({
         defaultValues: {
@@ -26,6 +28,7 @@ const CreateCategoryPage = () => {
             icon: '',
             hidden: false,
             available: true,
+            storeId: store?.id || '',
         },
         resolver: zodResolver(createCategorySchema),
     })

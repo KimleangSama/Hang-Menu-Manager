@@ -7,7 +7,7 @@ import { menuService } from '@/services/menu-service';
 import { toast } from 'sonner';
 
 import { useParams } from 'next/navigation';
-import { MenuResponse } from '@/types/menu-response';
+import { MenuResponse } from '../../../../../types/menu-response';
 
 const ViewPage = () => {
     const params = useParams<{ id: string }>();

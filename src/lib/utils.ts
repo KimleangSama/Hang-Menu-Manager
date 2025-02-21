@@ -12,3 +12,35 @@ export function uuidv4(): string {
     return v.toString(16);
   });
 }
+
+export const getNAIfNull = (value: string | undefined | null) => value ?? 'N/A'
+
+export const getCurrencyLabel = (currency: string | undefined | null) => {
+  switch (currency) {
+      case 'dollar':
+          return "$";
+      case 'riel':
+          return "R";
+      default:
+          return "Unknown Currency";
+  }
+};
+
+export const getStatusLabel = (status: string | undefined | null) => {
+  switch (status) {
+      case 'pending':
+          return "Pending";
+      case 'preparing':
+          return "Preparing";
+      case 'ready':
+          return "Ready";
+      case 'delivered':
+          return "Delivered";
+      case 'canceled':
+          return "Canceled";
+      case 'completed':
+          return "Completed";
+      default:
+          return "Unknown Status";
+  }
+};

@@ -1,12 +1,12 @@
-import { BaseResponse } from "@/types/base-response";
+import { BaseResponse } from "../types/base-response";
 import { APIService } from "@/api/base";
-import { CategoryResponse } from "@/types/category-response";
-import { CreateCategoryFormData } from "@/types/request/create-category-request";
+import { CategoryResponse } from "../types/category-response";
+import { CreateCategoryFormData } from "../types/request/create-category-request";
 
 class CategoryService extends APIService {
-    async listCategories(): Promise<BaseResponse<CategoryResponse[]>> {
+    async listCategories(storeId: string): Promise<BaseResponse<CategoryResponse[]>> {
         try {
-            const response = await this.get<BaseResponse<CategoryResponse[]>>('/categories/list?page=0&size=1000');
+            const response = await this.get<BaseResponse<CategoryResponse[]>>(`/categories/of-store/${storeId}/list`);
             console.log(response)
             return response;
         } catch (error) {
