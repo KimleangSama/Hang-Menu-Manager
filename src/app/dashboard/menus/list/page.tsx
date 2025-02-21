@@ -11,9 +11,11 @@ import { menuService } from "@/services/menu-service";
 import { MenuResponse } from "../../../../types/menu-response";
 import { DataTable } from "@/components/menus/menu-data";
 import { useStoreResponse } from "@/hooks/use-store";
+import { DataTableSkeleton } from "@/components/shared/table/data-table-skeleton";
 
 export default function ListMenuPage() {
     const store = useStoreResponse(state => state.store);
+    const [loading, setLoading] = useState(true)
     const [menus, setMenus] = useState<MenuResponse[]>([]);
     const [currentRow, setCurrentRow] = useState<MenuResponse | null>(null)
     const [open, setOpen] = useDialogState<TableListDialogType>(null)
@@ -32,6 +34,7 @@ export default function ListMenuPage() {
                     toast.error(String(error));
                 }
             }
+            setLoading(false)
         }
         fetchMenuList();
     }, []);
@@ -47,7 +50,9 @@ export default function ListMenuPage() {
                 </div>
                 <TableListContextProvider value={{ open, setOpen, currentRow, setCurrentRow }}>
                     <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-                        <DataTable data={menus} columns={menuColumns} />
+                        {loading ? <DataTableSkeleton columnCount={7} rowCount={15} /> :
+                            <DataTable data={menus} columns={menuColumns} />
+                        }
                         {/* {(open === 'delete' || open === 'edit') && (
                                 <EditDeleteAlertDialog
                                     open={open}

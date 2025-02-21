@@ -20,8 +20,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { z } from 'zod';
+import { useStoreResponse } from '@/hooks/use-store';
 
 const CreateMenuPage = () => {
+    const store = useStoreResponse(state => state.store);
     const [file, setFile] = useState<File | null>(null);
     const [image, setImage] = useState<string | null>(null);
     const [categories, setCategories] = useState<CategoryResponse[]>([]);
@@ -86,12 +88,14 @@ const CreateMenuPage = () => {
 
     useEffect(() => {
         async function listCategories() {
-            const response = await categoryService.listCategories();
-            if (response.success) {
-                setCategories(response.payload);
-            } else {
-                toast.error(response.error);
-                setMessage({ type: "error", text: response.error });
+            if (store && store.id) {
+                const response = await categoryService.listCategories(store?.id);
+                if (response.success) {
+                    setCategories(response.payload);
+                } else {
+                    toast.error(response.error);
+                    setMessage({ type: "error", text: response.error });
+                }
             }
         }
         listCategories();

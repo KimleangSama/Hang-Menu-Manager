@@ -11,9 +11,11 @@ import { orderService } from "@/services/order-service";
 import { useStoreResponse } from "@/hooks/use-store";
 import { orderColumns } from "@/components/orders/order-column";
 import { DataTable } from "@/components/orders/order-data";
+import { DataTableSkeleton } from "@/components/shared/table/data-table-skeleton";
 
 export default function ListOrderPage() {
     const store = useStoreResponse(state => state.store);
+    const [loading, setLoading] = useState(true)
     const [orders, setOrders] = useState<OrderListResponse[]>([]);
     const [currentRow, setCurrentRow] = useState<OrderListResponse | null>(null)
     const [open, setOpen] = useDialogState<TableListDialogType>(null)
@@ -34,6 +36,7 @@ export default function ListOrderPage() {
                     console.log(error);
                 }
             }
+            setLoading(false)
         }
         fetchOrderList();
     }, []);
@@ -46,7 +49,9 @@ export default function ListOrderPage() {
                 </div>
                 <TableListContextProvider value={{ open, setOpen, currentRow, setCurrentRow }}>
                     <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-                        <DataTable data={orders} columns={orderColumns} />
+                        {loading ? <DataTableSkeleton columnCount={7} rowCount={15} /> :
+                            <DataTable data={orders} columns={orderColumns} />
+                        }
                         {/* {(open === 'delete' || open === 'edit') && (
                                 <EditDeleteAlertDialog
                                     open={open}
