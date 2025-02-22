@@ -6,6 +6,7 @@ import { API_BASE_URL } from '@/constants/auth'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { MenuResponse } from '../../types/menu-response'
 import { DataTableRowActions } from './menu-row-action'
+import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
 
 export const menuColumns: ColumnDef<MenuResponse>[] = [
     {
@@ -17,8 +18,8 @@ export const menuColumns: ColumnDef<MenuResponse>[] = [
             const { image, name } = row.original
             if (!image) return (<img src={`https://ui-avatars.com/api/?name=` + name} alt='Menu Image' className='rounded w-8 h-8' />)
             return (
-                <Popover>
-                    <PopoverTrigger>
+                <Dialog>
+                    <DialogTrigger asChild>
                         <div className='flex items-center justify-center'>
                             <img
                                 src={API_BASE_URL + "/files/view/" + image}
@@ -29,15 +30,15 @@ export const menuColumns: ColumnDef<MenuResponse>[] = [
                                 }}
                             />
                         </div>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-[30%]'>
+                    </DialogTrigger>
+                    <DialogContent className=''>
                         <div className='flex items-center justify-center'>
-                            <img src={API_BASE_URL + "/files/view/" + image} alt='Menu Image' onError={(e) => {
+                            <img loading='lazy' src={API_BASE_URL + "/files/view/" + image} width={"100%"} alt='Menu Image' onError={(e) => {
                                 e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
                             }} />
                         </div>
-                    </PopoverContent>
-                </Popover>
+                    </DialogContent>
+                </Dialog>
             )
         },
     },

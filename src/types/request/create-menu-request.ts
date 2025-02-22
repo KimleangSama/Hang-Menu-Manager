@@ -11,6 +11,7 @@ export const createMenuSchema = z.object({
     images: z.array(z.string()).optional(),
     categoryId: z.string().min(1, { message: "Category is required" }),
     available: z.boolean(),
+    storeId: z.string().min(1, { message: "Store is required" }),
 });
 
 export type CreateMenuFormData = z.infer<typeof createMenuSchema>;

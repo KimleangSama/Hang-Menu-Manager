@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 
 import { useParams } from 'next/navigation';
 import { MenuResponse } from '../../../../../types/menu-response';
+import { API_BASE_URL } from '@/constants/auth';
 
 const ViewPage = () => {
     const params = useParams<{ id: string }>();
@@ -39,7 +40,7 @@ const ViewPage = () => {
         <DashboardPage>
             <div className='mx-auto max-w-6xl grid grid-cols-2 gap-4'>
                 <div className="p-4 space-y-6">
-                    <div className="sticky top-1 z-10 flex justify-between items-center">
+                    <div className="sticky top-1 z-10 flex justify-between items-center backdrop:blur-sm">
                         <h1 className="text-3xl font-bold">Menu Details</h1>
                     </div>
                     <div className="grid grid-cols-2 gap-4 px-4">
@@ -80,7 +81,9 @@ const ViewPage = () => {
                         <div className='col-span-2'>
                             <p className="font-medium text-lg">Image:</p>
                             <div className='flex items-center justify-center'>
-                                <img src={menuResponse.image} alt='Menu Image' className='w-full' />
+                                <img loading='lazy' src={API_BASE_URL + "/files/view/" + menuResponse.image} width={"100%"} alt='Menu Image' onError={(e) => {
+                                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${menuResponse.name}`
+                                }} />
                             </div>
                         </div>
                     </div>

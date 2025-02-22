@@ -50,7 +50,6 @@ export default function DashboardPage({ children }: DashboardPageProps) {
         }
       }
       getStoreInfo();
-      toast.success('Welcome to the dashboard');
     }
   }, [store]);
 
