@@ -2,11 +2,12 @@ import { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/shared/table/data-table-column-header'
 import LongText from '@/components/shared/text/long-text'
-import { API_BASE_URL } from '@/constants/auth'
+import { API_BASE_URL, API_IMAGE_URL } from '@/constants/auth'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { MenuResponse } from '../../types/menu-response'
 import { DataTableRowActions } from './menu-row-action'
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
+import Image from 'next/image'
 
 export const menuColumns: ColumnDef<MenuResponse>[] = [
     {
@@ -16,15 +17,27 @@ export const menuColumns: ColumnDef<MenuResponse>[] = [
         ),
         cell: ({ row }) => {
             const { image, name } = row.original
+            console.log(image)
             if (!image) return (<img src={`https://ui-avatars.com/api/?name=` + name} alt='Menu Image' className='rounded w-8 h-8' />)
             return (
                 <Dialog>
                     <DialogTrigger asChild>
-                        <div className='flex items-center justify-center'>
-                            <img
-                                src={API_BASE_URL + "/files/view/" + image}
+                        <div className='flex items-center justify-start cursor-pointer'>
+                            {/* <img
+                                src={API_IMAGE_URL + image}
                                 alt='Menu Image'
                                 className='w-8 h-8 rounded'
+                                onError={(e) => {
+                                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
+                                }}
+                            /> */}
+                            <Image
+                                src={API_IMAGE_URL + image}
+                                alt='Menu Image'
+                                width={32}
+                                height={32}
+                                blurDataURL='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjQuMywgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/MnkTPAAAACXBIWXMAAB7CAAAewgFu0HU+AAEAAElEQVR4nOzdd3gU5f7H8e9'
+                                placeholder='blur'
                                 onError={(e) => {
                                     e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
                                 }}
@@ -33,9 +46,16 @@ export const menuColumns: ColumnDef<MenuResponse>[] = [
                     </DialogTrigger>
                     <DialogContent className=''>
                         <div className='flex items-center justify-center'>
-                            <img loading='lazy' src={API_BASE_URL + "/files/view/" + image} width={"100%"} alt='Menu Image' onError={(e) => {
-                                e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
-                            }} />
+                            <Image
+                                src={API_IMAGE_URL + image}
+                                alt='Menu Image'
+                                width={400}
+                                height={400}
+                                loading='lazy'
+                                onError={(e) => {
+                                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
+                                }}
+                            />
                         </div>
                     </DialogContent>
                 </Dialog>
