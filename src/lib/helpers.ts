@@ -2,6 +2,8 @@ import imageCompression from "browser-image-compression";
 
 const defaultOptions = {
     maxSizeMB: 1,
+    useWebWorker: true,
+    alwaysKeepResolution: true,
 };
 
 export function compressFile(imageFile: File, options = defaultOptions) {

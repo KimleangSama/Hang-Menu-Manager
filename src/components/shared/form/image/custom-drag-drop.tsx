@@ -195,10 +195,12 @@ export function CustomDragDrop({
                                             </div>
                                         </div>
                                         <div className="flex justify-end">
-                                            <div className="space-y-1 flex-col items-center justify-center">
+                                            <div className="space-y-1 flex-col items-center justify-center" onClick={(e) => {
+                                                e.preventDefault();
+                                                onDelete(index)
+                                            }}>
                                                 <div
                                                     className="cursor-pointer justify-center flex"
-                                                    onClick={() => onDelete(index)}
                                                 >
                                                     <X className="text-red-500" />
                                                 </div>
@@ -210,8 +212,8 @@ export function CustomDragDrop({
                                     </div>
                                 </div>
                             </DialogTrigger>
-                            <DialogContent className="max-w-[75%] z-[100] p-2 shadow-xl rounded-md flex justify-center">
-                                <img src={img.photo} alt={img.name} className="h-[75vh] w-full object-cover" />
+                            <DialogContent className="z-[100] p-2 shadow-xl rounded-md flex justify-center">
+                                <img src={img.photo} alt={img.name} className="object-cover" />
                             </DialogContent>
                         </Dialog>
                     )

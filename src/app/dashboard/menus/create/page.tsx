@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import DashboardPage from '../../page';
 import { CreateMenuFormData, createMenuSchema } from '../../../../types/request/create-menu-request';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CategoryResponse } from '../../../../types/category-response';
 import { categoryService } from '@/services/category-service';
@@ -24,12 +23,11 @@ import { useStoreResponse } from '@/hooks/use-store';
 import { CustomDragDrop, FileFormat } from '@/components/shared/form/image/custom-drag-drop';
 import { compressFile } from '@/lib/helpers';
 import PreviewMenu from '@/components/menus/preview';
+import ImageUpload from '@/components/shared/form/image/image-upload';
 
 const CreateMenuPage = () => {
     const store = useStoreResponse(state => state.store);
-    const [compressing, setCompressing] = useState(false);
     const [file, setFile] = useState<File | null>(null);
-    const [image, setImage] = useState<string | null>(null);
     const [files, setFiles] = useState<File[]>([]);
     const [images, setImages] = useState<FileFormat[]>([]);
     const [categories, setCategories] = useState<CategoryResponse[]>([]);
@@ -55,49 +53,59 @@ const CreateMenuPage = () => {
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     const onSubmit = async (data: CreateMenuFormData) => {
-        setIsSubmitting(true);
-        setMessage(null);
-        if (!file) {
-            setMessage({ type: "error", text: "Image is required" });
-            setIsSubmitting(false);
-            return;
-        }
         try {
-            const fd = new FormData();
-            fd.append("file", file, "menu.png");
-            const uploadResponse = await fileService.uploadFile(fd);
-            if (!uploadResponse.success) throw new Error(uploadResponse.error);
-            data.image = uploadResponse.payload.name;
+            setIsSubmitting(true);
+            setMessage(null);
+
+            if (!file) {
+                throw new Error("Image is required");
+            }
+
+            // Create menu
             const response = await menuService.createMenu(data);
-            if (response.success) {
-                setMessage({ type: "success", text: "Menu menu created successfully!" });
-                toast.success("Menu menu created successfully!");
-                form.reset();
-                setFile(null);
-                setImage(null);
-            } else {
+            if (response.statusCode === 409) {
+                throw new Error("Menu code already exists.");
+            } else if (!response.success) {
                 throw new Error(response.error);
             }
+
+            setMessage({ type: "success", text: "Menu created successfully!" });
+            toast.success("Menu created successfully!");
+            // form.reset();
+
+            const fd = new FormData();
+            fd.append("file", file, "menu.png");
+            const uploadResponse = await fileService.uploadFile(response.payload.id, fd);
+            if (!uploadResponse.success) throw new Error(uploadResponse.error);
+
+            //// Upload primary image
+            // const fd = new FormData();
+            // fd.append("file", await handleCompressFile(file), "menu.png");
+            // const uploadResponse = await fileService.uploadFile(fd);
+            // if (!uploadResponse.success) throw new Error(uploadResponse.error);
+            // data.image = uploadResponse.payload.name;
+
+            //// Upload additional images (if any)
+            // if (files.length > 0) {
+            //     const fdImages = new FormData();
+            //     for (const f of files) {
+            //         fdImages.append("files", await handleCompressFile(f), f.name);
+            //     }
+            //     const uploadImagesResponse = await fileService.uploadFiles(fdImages);
+            //     if (!uploadImagesResponse.success) throw new Error(uploadImagesResponse.error);
+            //     data.images = uploadImagesResponse.payload.map(image => {
+            //         return {
+            //             name: image.name,
+            //             url: image.url,
+            //         };
+            //     });
+            // }
         } catch (error: any) {
             setMessage({ type: "error", text: error.message || "An error occurred." });
         } finally {
             setIsSubmitting(false);
         }
     };
-
-
-    function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-        if (e.target.files && e.target.files.length > 0) {
-            const file = e.target.files[0];
-            setCompressing(true)
-            handleCompressFile(file).then((compressedFile) => {
-                if (!compressedFile) return;
-                setFile(compressedFile);
-                setImage(URL.createObjectURL(compressedFile));
-                setCompressing(false);
-            });
-        }
-    }
 
     function uploadImages(uploadedImages: File[], fileFormats: FileFormat[]) {
         setFiles([...files, ...uploadedImages]);
@@ -117,8 +125,10 @@ const CreateMenuPage = () => {
                 return compressedImageFile;
             } catch (error) {
                 console.log({ error });
+                return file;
             }
         }
+        return file;
     };
 
     useEffect(() => {
@@ -145,7 +155,9 @@ const CreateMenuPage = () => {
                             <div className="sticky top-1 z-10 flex justify-between items-center">
                                 <h1 className="text-3xl font-bold">Create Menu</h1>
                                 <div className='flex items-center gap-4'>
-                                    <Button type='button' variant={'secondary'} onClick={() => setPreview(!preview)}>Preview</Button>
+                                    <Button type='button' variant={'secondary'} onClick={() => setPreview(!preview)}>
+                                        {preview ? "Edit" : "Preview"}
+                                    </Button>
                                     <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating..." : "Create"}</Button>
                                 </div>
                             </div>
@@ -156,7 +168,7 @@ const CreateMenuPage = () => {
                                     images={files}
                                 />) :
                                 <Card className="p-6">
-                                    {message && <Alert className='mb-2' variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
+                                    {message && <Alert className={`mb-2 ${message.type === 'error' ? 'border-red-400' : 'text-green-400 border-green-400'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
                                     <div className='grid grid-cols-2 gap-4'>
                                         <div className="space-y-2">
                                             <FormField
@@ -164,7 +176,10 @@ const CreateMenuPage = () => {
                                                 control={form.control}
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Code</FormLabel>
+                                                        <FormLabel>
+                                                            Code
+                                                            <small className="text-gray-500 dark:text-gray-400"> (Optional)</small>
+                                                        </FormLabel>
                                                         <FormControl>
                                                             <Input {...field} />
                                                         </FormControl>
@@ -294,24 +309,17 @@ const CreateMenuPage = () => {
                                         </div>
 
                                         <div className='space-y-2'>
-                                            <Label htmlFor={'image'}>Image</Label>
-                                            <Input
-                                                name='image'
-                                                type='file'
-                                                accept='image/*'
-                                                onChange={handleImageChange}
+                                            <ImageUpload
+                                                title='Upload Image'
+                                                onUpload={(file) => {
+                                                    // handleCompressFile(file).then((compressedFile) => {
+                                                    //     if (!compressedFile) return;
+                                                    //     setFile(compressedFile);
+                                                    // });
+                                                    setFile(file);
+                                                }}
+                                                previewUrl={file ? URL.createObjectURL(file) : undefined}
                                             />
-                                            {compressing && <p>Compressing...</p>}
-                                            {image && (
-                                                <Popover>
-                                                    <PopoverTrigger>
-                                                        <img src={image} alt="Menu Image" className='mt-4 w-56 object-cover' />
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className='w-[480px]'>
-                                                        <img src={image} alt="Menu Image" className='w-full object-cover' />
-                                                    </PopoverContent>
-                                                </Popover>
-                                            )}
                                         </div>
 
                                         <div className='space-y-2'>

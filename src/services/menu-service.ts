@@ -7,6 +7,7 @@ class MenuService extends APIService {
     async createMenu(data: CreateMenuFormData): Promise<BaseResponse<MenuResponse>> {
         try {
             const response = await this.post<BaseResponse<MenuResponse>, CreateMenuFormData>('/menus/create', data);
+            console.log(response)
             return response;
         } catch (error) {
             console.error(error)

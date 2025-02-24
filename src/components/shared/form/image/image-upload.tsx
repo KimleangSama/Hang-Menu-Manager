@@ -12,6 +12,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 import { Button } from "@/components/ui/button";
 import { useDebounceEffect } from "@/hooks/use-debounce";
 import { canvasPreview } from "./canvas-preview";
+import { toast } from "sonner";
 
 export interface ImageUploadProps {
     title: string;
@@ -51,10 +52,14 @@ export default function ImageUpload({ title, onUpload, previewUrl }: ImageUpload
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
+        if (file && file.size < 5242880) {
             const preview = URL.createObjectURL(file);
             setImagePreview(preview);
             setIsCropped(false)
+        } else {
+            setImagePreview(null)
+            setIsCropped(false)
+            toast.error('File cannot be larger than 5MB')
         }
     };
 
