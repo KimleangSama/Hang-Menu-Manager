@@ -21,9 +21,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { z } from 'zod';
 import { useStoreResponse } from '@/hooks/use-store';
 import { CustomDragDrop, FileFormat } from '@/components/shared/form/image/custom-drag-drop';
-import { compressFile } from '@/lib/helpers';
-import PreviewMenu from '@/components/menus/preview';
+import { compressFile, getCurrencySign, getFullPrice } from '@/lib/helpers';
 import ImageUpload from '@/components/shared/form/image/image-upload';
+import { FaFacebook, FaInstagram, FaTelegram } from 'react-icons/fa';
+import LongText from '@/components/shared/text/long-text';
 
 const CreateMenuPage = () => {
     const store = useStoreResponse(state => state.store);
@@ -148,202 +149,238 @@ const CreateMenuPage = () => {
 
     return (
         <DashboardPage>
-            <div className='mx-auto max-w-6xl'>
-                <div className="p-4 space-y-6">
+            <div className='mx-auto max-w-6xl flex items-start gap-4'>
+                <div className="p-4 space-y-6 overflow-auto">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             <div className="sticky top-1 z-10 flex justify-between items-center">
                                 <h1 className="text-3xl font-bold">Create Menu</h1>
                                 <div className='flex items-center gap-4'>
-                                    <Button type='button' variant={'secondary'} onClick={() => setPreview(!preview)}>
-                                        {preview ? "Edit" : "Preview"}
-                                    </Button>
                                     <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating..." : "Create"}</Button>
                                 </div>
                             </div>
-                            {preview ? (
-                                <PreviewMenu
-                                    menu={form.getValues() as CreateMenuFormData}
-                                    image={file as File}
-                                    images={files}
-                                />) :
-                                <Card className="p-6">
-                                    {message && <Alert className={`mb-2 ${message.type === 'error' ? 'border-red-400' : 'text-green-400 border-green-400'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
-                                    <div className='grid grid-cols-2 gap-4'>
-                                        <div className="space-y-2">
-                                            <FormField
-                                                name='code'
-                                                control={form.control}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            Code
-                                                            <small className="text-gray-500 dark:text-gray-400"> (Optional)</small>
-                                                        </FormLabel>
+                            <Card className="p-6">
+                                {message && <Alert className={`mb-2 ${message.type === 'error' ? 'border-red-400' : 'text-green-400 border-green-400'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
+                                <div className='grid grid-cols-2 gap-4'>
+                                    <div className="space-y-2">
+                                        <FormField
+                                            name='code'
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        Code
+                                                        <small className="text-gray-500 dark:text-gray-400"> (Optional)</small>
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <FormField
+                                            name='name'
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <FormField
+                                            name='price'
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Price {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
+                                                    <FormControl>
+                                                        <Input {...field} type='number' />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <FormField
+                                            name='discount'
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Discount {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
+                                                    <FormControl>
+                                                        <Input {...field} type='number' />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <FormField
+                                            name='currency'
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Currency</FormLabel>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                         <FormControl>
-                                                            <Input {...field} />
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select Currency" />
+                                                            </SelectTrigger>
                                                         </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
+                                                        <SelectContent>
+                                                            <SelectGroup>
+                                                                <SelectLabel>Currency</SelectLabel>
+                                                                <SelectItem value='dollar'>Dollar</SelectItem>
+                                                                <SelectItem value='riel'>Riel</SelectItem>
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
 
-                                        <div className="space-y-2">
-                                            <FormField
-                                                name='name'
-                                                control={form.control}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Name</FormLabel>
+                                    <div className="space-y-2">
+                                        <FormField
+                                            name='categoryId'
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Category</FormLabel>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                         <FormControl>
-                                                            <Input {...field} />
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select Category" />
+                                                            </SelectTrigger>
                                                         </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
+                                                        <SelectContent>
+                                                            <SelectGroup>
+                                                                <SelectLabel>Category</SelectLabel>
+                                                                {categories.map(category => (
+                                                                    <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+                                                                ))}
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
 
-                                        <div className="space-y-2">
-                                            <FormField
-                                                name='price'
-                                                control={form.control}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Price {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
-                                                        <FormControl>
-                                                            <Input {...field} type='number' />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
+                                    <div className="col-span-2 space-y-2">
+                                        <FormField
+                                            name='description'
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Description</FormLabel>
+                                                    <FormControl>
+                                                        <Textarea {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
 
-                                        <div className="space-y-2">
-                                            <FormField
-                                                name='discount'
-                                                control={form.control}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Discount {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
-                                                        <FormControl>
-                                                            <Input {...field} type='number' />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
+                                    <div className='space-y-2'>
+                                        <ImageUpload
+                                            title='Upload Image'
+                                            onUpload={(file) => {
+                                                // handleCompressFile(file).then((compressedFile) => {
+                                                //     if (!compressedFile) return;
+                                                //     setFile(compressedFile);
+                                                // });
+                                                setFile(file);
+                                            }}
+                                            previewUrl={file ? URL.createObjectURL(file) : undefined}
+                                        />
+                                    </div>
 
-                                        <div className="space-y-2">
-                                            <FormField
-                                                name='currency'
-                                                control={form.control}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Currency</FormLabel>
-                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                            <FormControl>
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Select Currency" />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent>
-                                                                <SelectGroup>
-                                                                    <SelectLabel>Currency</SelectLabel>
-                                                                    <SelectItem value='dollar'>Dollar</SelectItem>
-                                                                    <SelectItem value='riel'>Riel</SelectItem>
-                                                                </SelectGroup>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <FormField
-                                                name='categoryId'
-                                                control={form.control}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Category</FormLabel>
-                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                            <FormControl>
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Select Category" />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent>
-                                                                <SelectGroup>
-                                                                    <SelectLabel>Category</SelectLabel>
-                                                                    {categories.map(category => (
-                                                                        <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
-                                                                    ))}
-                                                                </SelectGroup>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-
-                                        <div className="col-span-2 space-y-2">
-                                            <FormField
-                                                name='description'
-                                                control={form.control}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Description</FormLabel>
-                                                        <FormControl>
-                                                            <Textarea {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-
-                                        <div className='space-y-2'>
-                                            <ImageUpload
-                                                title='Upload Image'
-                                                onUpload={(file) => {
-                                                    // handleCompressFile(file).then((compressedFile) => {
-                                                    //     if (!compressedFile) return;
-                                                    //     setFile(compressedFile);
-                                                    // });
-                                                    setFile(file);
-                                                }}
-                                                previewUrl={file ? URL.createObjectURL(file) : undefined}
-                                            />
-                                        </div>
-
-                                        <div className='space-y-2'>
-                                            <div className="grid gap-4">
-                                                <div className="bg-white dark:bg-[#111111] shadow dark:shadow-white rounded-md w-full px-5 pt-3 pb-5">
-                                                    <Label>Slide Images</Label>
-                                                    <CustomDragDrop
-                                                        pictures={images}
-                                                        onUpload={uploadImages}
-                                                        onDelete={deleteImage}
-                                                        count={4}
-                                                        formats={["jpg", "jpeg", "png"]}
-                                                    />
-                                                </div>
+                                    <div className='space-y-2'>
+                                        <div className="grid gap-4">
+                                            <div className="bg-white dark:bg-[#111111] shadow dark:shadow-white rounded-md w-full px-5 pt-3 pb-5">
+                                                <Label>Slide Images</Label>
+                                                <CustomDragDrop
+                                                    pictures={images}
+                                                    onUpload={uploadImages}
+                                                    onDelete={deleteImage}
+                                                    count={4}
+                                                    formats={["jpg", "jpeg", "png"]}
+                                                />
                                             </div>
                                         </div>
                                     </div>
-                                </Card>
-                            }
+                                </div>
+                            </Card>
                         </form>
                     </Form>
                 </div>
+                <div className='p-4 space-y-6 sticky top-0'>
+                    <div className="collapse top-1 z-10">
+                        <h1 className="text-3xl font-bold">Create Menu</h1>
+                    </div>
+                    <div className="sticky top-0 mx-auto border-gray-800 dark:border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] w-[300px]">
+                        <div className="h-[32px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -start-[17px] top-[72px] rounded-s-lg"></div>
+                        <div className="h-[46px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg"></div>
+                        <div className="h-[46px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -start-[17px] top-[178px] rounded-s-lg"></div>
+                        <div className="h-[64px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -end-[17px] top-[142px] rounded-e-lg"></div>
+                        <div className="rounded-[2rem] w-[272px] h-[572px] bg-white dark:bg-gray-800 px-2 py-4 space-y-6 flex flex-col justify-center overflow-auto max-h-full">
+                            <div
+                                className="relative cursor-pointer border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                            >
+                                <div className="absolute top-2 left-2 text-white text-xs font-semibold px-2 py-1 rounded-md"
+                                    style={{ backgroundColor: store?.color }}>
+                                    {form.watch("available") ? 'In Stock' : 'No Stock'}
+                                </div>
+                                {file ? <img src={URL.createObjectURL(file)} alt="menu" className="w-full h-[200px] object-cover" /> : <img src="https://placehold.co/600x400" alt="menu" className="w-full h-[200px] object-cover" />}
+                                {/* <div className='px-4 pt-2'>
+                                {form.watch("categoryId") && <p className="text-xs text-gray-500">Category: {categories.find(category => category.id === form.watch("categoryId"))?.name}</p>}
+                                </div> */}
+                                <div className="px-4 py-2">
+                                    {form.watch("code") && <h6 className="text-xs text-gray-500">Code: {form.watch("code")}</h6>}
+                                    <h3 className="font-semibold">{form.watch("name")}</h3>
+                                    <div className='overflow-scroll'>
+                                        <p className="text-gray-500 text-xs overflow-auto text-ellipsis">{form.watch("description")}</p>
+                                    </div>
+                                    {form.watch('discount') && Number(form.watch('discount')) > 0 && <p className='text-red-500 line-through'>{getFullPrice(form.watch('currency'), Number(form.watch('discount')), Number(form.watch('price')))}</p>}
+                                    <p style={{ color: store?.color }}>{getCurrencySign(form.watch('currency'))}{Number(form.watch('price'))}</p>
+                                </div>
+                                <div className='pt-2 flex flex-col items-center justify-center'>
+                                    <div className='flex items-center justify-center'>
+                                        <img src={store ? store.logo : "https://placehold.co/600x400"} onError={(e) => { e.currentTarget.src = "https://placehold.co/600x400" }} alt="store" className="w-8 h-8 rounded-full object-cover" />
+                                        <p className="text-xs text-gray-500">{store?.name}</p>
+                                    </div>
+                                    <div className="flex justify-center items-center px-4 py-2 gap-2">
+                                        <FaFacebook className="text-blue-500 ml-2" />
+                                        <FaTelegram className="text-blue-500" />
+                                        <FaInstagram className="text-blue-500" />
+                                        <p className="text-xs text-gray-500">Tel: {store?.phone}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </DashboardPage >
+        </DashboardPage>
     );
 };
 
