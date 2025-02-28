@@ -24,7 +24,8 @@ import { CustomDragDrop, FileFormat } from '@/components/shared/form/image/custo
 import { compressFile, getCurrencySign, getFullPrice } from '@/lib/helpers';
 import ImageUpload from '@/components/shared/form/image/image-upload';
 import { FaFacebook, FaInstagram, FaTelegram } from 'react-icons/fa';
-import LongText from '@/components/shared/text/long-text';
+import { BADGES } from '@/constants/badges';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const CreateMenuPage = () => {
     const store = useStoreResponse(state => state.store);
@@ -42,6 +43,7 @@ const CreateMenuPage = () => {
             currency: "dollar",
             image: '',
             images: [],
+            badges: [],
             categoryId: '',
             available: true,
             storeId: store?.id || '',
@@ -49,63 +51,63 @@ const CreateMenuPage = () => {
         resolver: zodResolver(createMenuSchema),
     })
 
-    const [preview, setPreview] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     const onSubmit = async (data: CreateMenuFormData) => {
-        try {
-            setIsSubmitting(true);
-            setMessage(null);
+        console.log(data)
+        // try {
+        //     setIsSubmitting(true);
+        //     setMessage(null);
 
-            if (!file) {
-                throw new Error("Image is required");
-            }
+        //     if (!file) {
+        //         throw new Error("Image is required");
+        //     }
 
-            // Create menu
-            const response = await menuService.createMenu(data);
-            if (response.statusCode === 409) {
-                throw new Error("Menu code already exists.");
-            } else if (!response.success) {
-                throw new Error(response.error);
-            }
+        //     // Create menu
+        //     const response = await menuService.createMenu(data);
+        //     if (response.statusCode === 409) {
+        //         throw new Error("Menu code already exists.");
+        //     } else if (!response.success) {
+        //         throw new Error(response.error);
+        //     }
 
-            setMessage({ type: "success", text: "Menu created successfully!" });
-            toast.success("Menu created successfully!");
-            // form.reset();
+        //     setMessage({ type: "success", text: "Menu created successfully!" });
+        //     toast.success("Menu created successfully!");
+        //     // form.reset();
 
-            const fd = new FormData();
-            fd.append("file", file, "menu.png");
-            const uploadResponse = await fileService.uploadFile(response.payload.id, fd);
-            if (!uploadResponse.success) throw new Error(uploadResponse.error);
+        //     const fd = new FormData();
+        //     fd.append("file", file, "menu.png");
+        //     const uploadResponse = await fileService.uploadFile(response.payload.id, fd);
+        //     if (!uploadResponse.success) throw new Error(uploadResponse.error);
 
-            //// Upload primary image
-            // const fd = new FormData();
-            // fd.append("file", await handleCompressFile(file), "menu.png");
-            // const uploadResponse = await fileService.uploadFile(fd);
-            // if (!uploadResponse.success) throw new Error(uploadResponse.error);
-            // data.image = uploadResponse.payload.name;
+        //     //// Upload primary image
+        //     // const fd = new FormData();
+        //     // fd.append("file", await handleCompressFile(file), "menu.png");
+        //     // const uploadResponse = await fileService.uploadFile(fd);
+        //     // if (!uploadResponse.success) throw new Error(uploadResponse.error);
+        //     // data.image = uploadResponse.payload.name;
 
-            //// Upload additional images (if any)
-            // if (files.length > 0) {
-            //     const fdImages = new FormData();
-            //     for (const f of files) {
-            //         fdImages.append("files", await handleCompressFile(f), f.name);
-            //     }
-            //     const uploadImagesResponse = await fileService.uploadFiles(fdImages);
-            //     if (!uploadImagesResponse.success) throw new Error(uploadImagesResponse.error);
-            //     data.images = uploadImagesResponse.payload.map(image => {
-            //         return {
-            //             name: image.name,
-            //             url: image.url,
-            //         };
-            //     });
-            // }
-        } catch (error: any) {
-            setMessage({ type: "error", text: error.message || "An error occurred." });
-        } finally {
-            setIsSubmitting(false);
-        }
+        //     //// Upload additional images (if any)
+        //     // if (files.length > 0) {
+        //     //     const fdImages = new FormData();
+        //     //     for (const f of files) {
+        //     //         fdImages.append("files", await handleCompressFile(f), f.name);
+        //     //     }
+        //     //     const uploadImagesResponse = await fileService.uploadFiles(fdImages);
+        //     //     if (!uploadImagesResponse.success) throw new Error(uploadImagesResponse.error);
+        //     //     data.images = uploadImagesResponse.payload.map(image => {
+        //     //         return {
+        //     //             name: image.name,
+        //     //             url: image.url,
+        //     //         };
+        //     //     });
+        //     // }
+        // } catch (error: any) {
+        //     setMessage({ type: "error", text: error.message || "An error occurred." });
+        // } finally {
+        //     setIsSubmitting(false);
+        // }
     };
 
     function uploadImages(uploadedImages: File[], fileFormats: FileFormat[]) {
@@ -199,44 +201,12 @@ const CreateMenuPage = () => {
 
                                     <div className="space-y-2">
                                         <FormField
-                                            name='price'
-                                            control={form.control}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Price {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
-                                                    <FormControl>
-                                                        <Input {...field} type='number' />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <FormField
-                                            name='discount'
-                                            control={form.control}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Discount {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
-                                                    <FormControl>
-                                                        <Input {...field} type='number' />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <FormField
                                             name='currency'
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Currency</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
                                                         <FormControl>
                                                             <SelectTrigger>
                                                                 <SelectValue placeholder="Select Currency" />
@@ -284,7 +254,78 @@ const CreateMenuPage = () => {
                                         />
                                     </div>
 
-                                    <div className="col-span-2 space-y-2">
+                                    <div className="space-y-2">
+                                        <FormField
+                                            name='price'
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Price {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
+                                                    <FormControl>
+                                                        <Input {...field} type='number' />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <FormField
+                                            name='discount'
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Discount {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
+                                                    <FormControl>
+                                                        <Input {...field} type='number' />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <FormField
+                                            name={"badges"}
+                                            control={form.control}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Badge</FormLabel>
+                                                    <FormControl>
+                                                        <div>
+                                                            {BADGES?.map((badge, index) => (
+                                                                <div key={index} className="flex items-center space-x-2 my-1">
+                                                                    <Checkbox
+                                                                        id={String(badge.id)}
+                                                                        key={index}
+                                                                        onCheckedChange={(checked) => {
+                                                                            if (checked) {
+                                                                                form.setValue("badges", [...(field.value || []), badge.name]);
+                                                                            } else {
+                                                                                form.setValue("badges", (field.value || []).filter((b: string) => b !== badge.name));
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                    <label
+                                                                        htmlFor={String(badge.id)}
+                                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                                        style={{ color: badge.color }}
+                                                                    >
+                                                                        {badge.name}
+                                                                    </label>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
                                         <FormField
                                             name='description'
                                             control={form.control}
@@ -304,10 +345,6 @@ const CreateMenuPage = () => {
                                         <ImageUpload
                                             title='Upload Image'
                                             onUpload={(file) => {
-                                                // handleCompressFile(file).then((compressedFile) => {
-                                                //     if (!compressedFile) return;
-                                                //     setFile(compressedFile);
-                                                // });
                                                 setFile(file);
                                             }}
                                             previewUrl={file ? URL.createObjectURL(file) : undefined}
@@ -316,7 +353,7 @@ const CreateMenuPage = () => {
 
                                     <div className='space-y-2'>
                                         <div className="grid gap-4">
-                                            <div className="bg-white dark:bg-[#111111] shadow dark:shadow-white rounded-md w-full px-5 pt-3 pb-5">
+                                            <div className="bg-white dark:bg-[#111111] border rounded-md w-full px-5 pt-3 pb-5">
                                                 <Label>Slide Images</Label>
                                                 <CustomDragDrop
                                                     pictures={images}
@@ -346,14 +383,16 @@ const CreateMenuPage = () => {
                             <div
                                 className="relative cursor-pointer border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                             >
-                                <div className="absolute top-2 left-2 text-white text-xs font-semibold px-2 py-1 rounded-md"
-                                    style={{ backgroundColor: store?.color }}>
-                                    {form.watch("available") ? 'In Stock' : 'No Stock'}
+                                <div className="absolute top-2 left-2 flex flex-wrap gap-y-1 items-center">
+                                    {form.watch('badges')?.map((badge, index) => (
+                                        <div key={index} className="text-white text-[10px] px-1.5 py-0.5 rounded-md mr-1"
+                                            style={{ backgroundColor: BADGES.find(b => b.name === badge)?.color }}
+                                        >
+                                            {BADGES.find(b => b.name === badge)?.name}
+                                        </div>
+                                    ))}
                                 </div>
                                 {file ? <img src={URL.createObjectURL(file)} alt="menu" className="w-full h-[200px] object-cover" /> : <img src="https://placehold.co/600x400" alt="menu" className="w-full h-[200px] object-cover" />}
-                                {/* <div className='px-4 pt-2'>
-                                {form.watch("categoryId") && <p className="text-xs text-gray-500">Category: {categories.find(category => category.id === form.watch("categoryId"))?.name}</p>}
-                                </div> */}
                                 <div className="px-4 py-2">
                                     {form.watch("code") && <h6 className="text-xs text-gray-500">Code: {form.watch("code")}</h6>}
                                     <h3 className="font-semibold">{form.watch("name")}</h3>
@@ -364,8 +403,11 @@ const CreateMenuPage = () => {
                                     <p style={{ color: store?.color }}>{getCurrencySign(form.watch('currency'))}{Number(form.watch('price'))}</p>
                                 </div>
                                 <div className='pt-2 flex flex-col items-center justify-center'>
-                                    <div className='flex items-center justify-center'>
-                                        <img src={store ? store.logo : "https://placehold.co/600x400"} onError={(e) => { e.currentTarget.src = "https://placehold.co/600x400" }} alt="store" className="w-8 h-8 rounded-full object-cover" />
+                                    <div className='flex items-center justify-center gap-1'>
+                                        <img src={store ? store.logo : "https://placehold.co/600x400"}
+                                            onError={(e) => { e.currentTarget.src = "https://placehold.co/600x400" }}
+                                            alt="store"
+                                            className="w-6 h-6 rounded-full object-cover" />
                                         <p className="text-xs text-gray-500">{store?.name}</p>
                                     </div>
                                     <div className="flex justify-center items-center px-4 py-2 gap-2">

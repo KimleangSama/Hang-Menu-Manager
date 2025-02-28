@@ -13,6 +13,7 @@ export const createMenuSchema = z.object({
         url: z.string().optional(),
     })).optional(),
     categoryId: z.string().min(1, { message: "Category is required" }),
+    badges: z.array(z.string()).optional(),
     available: z.boolean(),
     storeId: z.string().min(1, { message: "Store is required" }),
 });
