@@ -34,7 +34,7 @@ export default function ListCategoryPage() {
             }
         }
         fetchCategoryList();
-    }, []);
+    }, [store]);
 
     return (
         <DashboardPage>

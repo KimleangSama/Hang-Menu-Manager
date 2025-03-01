@@ -19,11 +19,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { z } from 'zod';
 import { useStoreResponse } from '@/hooks/use-store';
 import { CustomDragDrop, FileFormat } from '@/components/shared/form/image/custom-drag-drop';
-import { compressFile, getCurrencySign, getFullPrice } from '@/lib/helpers';
+import { getCurrencySign, getFullPrice } from '@/lib/helpers';
 import ImageUpload from '@/components/shared/form/image/image-upload';
 import { FaFacebook, FaInstagram, FaTelegram } from 'react-icons/fa';
 import { BADGES } from '@/constants/badges';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation } from 'swiper/modules';
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { menuService } from '@/services/menu-service';
+import { fileService } from '@/services/file-service';
 
 const CreateMenuPage = () => {
     const store = useStoreResponse(state => state.store);
@@ -53,59 +60,43 @@ const CreateMenuPage = () => {
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     const onSubmit = async (data: CreateMenuFormData) => {
-        console.log(data)
-        // try {
-        //     setIsSubmitting(true);
-        //     setMessage(null);
+        try {
+            setIsSubmitting(true);
+            setMessage(null);
 
-        //     if (!file) {
-        //         throw new Error("Image is required");
-        //     }
+            if (!file) {
+                throw new Error("Image is required");
+            }
 
-        //     // Create menu
-        //     const response = await menuService.createMenu(data);
-        //     if (response.statusCode === 409) {
-        //         throw new Error("Menu code already exists.");
-        //     } else if (!response.success) {
-        //         throw new Error(response.error);
-        //     }
+            // Create menu
+            const response = await menuService.createMenu(data);
+            if (response.statusCode === 409) {
+                throw new Error("Menu code already exists.");
+            } else if (!response.success) {
+                throw new Error(response.error);
+            }
 
-        //     setMessage({ type: "success", text: "Menu created successfully!" });
-        //     toast.success("Menu created successfully!");
-        //     // form.reset();
+            setMessage({ type: "success", text: "Menu created successfully!" });
+            toast.success("Menu created successfully!");
 
-        //     const fd = new FormData();
-        //     fd.append("file", file, "menu.png");
-        //     const uploadResponse = await fileService.uploadFile(response.payload.id, fd);
-        //     if (!uploadResponse.success) throw new Error(uploadResponse.error);
+            const imageFD = new FormData();
+            imageFD.append("file", file, file.name);
+            const uploadResponse = await fileService.uploadFile(response.payload.id, 'menu', imageFD);
+            if (!uploadResponse.success) throw new Error(uploadResponse.error);
 
-        //     //// Upload primary image
-        //     // const fd = new FormData();
-        //     // fd.append("file", await handleCompressFile(file), "menu.png");
-        //     // const uploadResponse = await fileService.uploadFile(fd);
-        //     // if (!uploadResponse.success) throw new Error(uploadResponse.error);
-        //     // data.image = uploadResponse.payload.name;
-
-        //     //// Upload additional images (if any)
-        //     // if (files.length > 0) {
-        //     //     const fdImages = new FormData();
-        //     //     for (const f of files) {
-        //     //         fdImages.append("files", await handleCompressFile(f), f.name);
-        //     //     }
-        //     //     const uploadImagesResponse = await fileService.uploadFiles(fdImages);
-        //     //     if (!uploadImagesResponse.success) throw new Error(uploadImagesResponse.error);
-        //     //     data.images = uploadImagesResponse.payload.map(image => {
-        //     //         return {
-        //     //             name: image.name,
-        //     //             url: image.url,
-        //     //         };
-        //     //     });
-        //     // }
-        // } catch (error: any) {
-        //     setMessage({ type: "error", text: error.message || "An error occurred." });
-        // } finally {
-        //     setIsSubmitting(false);
-        // }
+            if (files.length > 0) {
+                const slideImagesFD = new FormData();
+                for (const file of files) {
+                    slideImagesFD.append("files", file, file.name);
+                }
+                const uploadImagesResponse = await fileService.uploadFiles(response.payload.id, 'menu', slideImagesFD);
+                if (!uploadImagesResponse.success) throw new Error(uploadImagesResponse.error);
+            }
+        } catch (error: any) {
+            setMessage({ type: "error", text: error.message || "An error occurred." });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     function uploadImages(uploadedImages: File[], fileFormats: FileFormat[]) {
@@ -119,22 +110,10 @@ const CreateMenuPage = () => {
         setImages(updatedList);
     }
 
-    const handleCompressFile = async (file: File) => {
-        if (file) {
-            try {
-                const compressedImageFile = await compressFile(file);
-                return compressedImageFile;
-            } catch (error) {
-                console.log({ error });
-                return file;
-            }
-        }
-        return file;
-    };
-
     useEffect(() => {
         async function listCategories() {
             if (store && store.id) {
+                form.setValue("storeId", store.id);
                 const response = await categoryService.listCategories(store?.id);
                 if (response.success) {
                     setCategories(response.payload);
@@ -145,12 +124,12 @@ const CreateMenuPage = () => {
             }
         }
         listCategories();
-    }, []);
+    }, [store]);
 
     return (
         <DashboardPage>
-            <div className='mx-auto w-full max-w-full flex items-start justify-center'>
-                <div className="p-4 space-y-6 overflow-auto">
+            <div className='max-w-full flex xl:flex-nowrap flex-wrap'>
+                <div className="p-4 w-full space-y-6">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             <div className="sticky top-1 z-10 flex justify-between items-center">
@@ -160,8 +139,45 @@ const CreateMenuPage = () => {
                                 </div>
                             </div>
                             <Card className="p-6">
+                                {form.formState.errors && form.formState.errors.code && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.code.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.name && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.name.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.currency && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.currency.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.categoryId && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.categoryId.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.price && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.price.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.discount && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.discount.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.description && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.description.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.badges && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.badges.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.image && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.image.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.images && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.images.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.storeId && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.storeId.message}</AlertDescription></Alert>}
+                                {form.formState.errors && form.formState.errors.available && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.available.message}</AlertDescription></Alert>}
                                 {message && <Alert className={`mb-2 ${message.type === 'error' ? 'border-red-400' : 'text-green-400 border-green-400'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
                                 <div className='grid grid-cols-2 gap-4'>
+                                    <div className='space-y-2'>
+                                        <ImageUpload
+                                            title='Upload Image'
+                                            onUpload={(file) => {
+                                                setFile(file);
+                                            }}
+                                            previewUrl={file ? URL.createObjectURL(file) : undefined}
+                                        />
+                                    </div>
+
+                                    <div className='space-y-2'>
+                                        <div className="grid gap-4">
+                                            <div className="bg-white dark:bg-[#111111] border rounded-md w-full px-5 pt-3 pb-5">
+                                                <Label>Slide Images</Label>
+                                                <CustomDragDrop
+                                                    pictures={images}
+                                                    onUpload={uploadImages}
+                                                    onDelete={deleteImage}
+                                                    count={4}
+                                                    formats={["jpg", "jpeg", "png"]}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div className="space-y-2">
                                         <FormField
                                             name='code'
@@ -338,31 +354,6 @@ const CreateMenuPage = () => {
                                             )}
                                         />
                                     </div>
-
-                                    <div className='space-y-2'>
-                                        <ImageUpload
-                                            title='Upload Image'
-                                            onUpload={(file) => {
-                                                setFile(file);
-                                            }}
-                                            previewUrl={file ? URL.createObjectURL(file) : undefined}
-                                        />
-                                    </div>
-
-                                    <div className='space-y-2'>
-                                        <div className="grid gap-4">
-                                            <div className="bg-white dark:bg-[#111111] border rounded-md w-full px-5 pt-3 pb-5">
-                                                <Label>Slide Images</Label>
-                                                <CustomDragDrop
-                                                    pictures={images}
-                                                    onUpload={uploadImages}
-                                                    onDelete={deleteImage}
-                                                    count={4}
-                                                    formats={["jpg", "jpeg", "png"]}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </Card>
                         </form>
@@ -381,7 +372,7 @@ const CreateMenuPage = () => {
                             <div
                                 className="relative cursor-pointer border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                             >
-                                <div className="absolute top-2 left-2 flex flex-wrap gap-y-1 items-center">
+                                <div className="absolute top-2 left-2 flex flex-wrap gap-y-1 items-center z-[9999]">
                                     {form.watch('badges')?.map((badge, index) => (
                                         <div key={index} className="text-white text-[10px] px-1.5 py-0.5 rounded-md mr-1"
                                             style={{ backgroundColor: BADGES.find(b => b.name === badge)?.color }}
@@ -390,7 +381,29 @@ const CreateMenuPage = () => {
                                         </div>
                                     ))}
                                 </div>
-                                {file ? <img src={URL.createObjectURL(file)} alt="menu" className="w-full h-[200px] object-cover" /> : <img src="https://placehold.co/600x400" alt="menu" className="w-full h-[200px] object-cover" />}
+                                <div className='w-full'>
+                                    <Swiper
+                                        style={{ "--swiper-navigation-color": "red", "--swiper-pagination-color": "red", "--swiper-pagination-bullet-inactive-color": "blue;", "--swiper-navigation-size": '24px' } as React.CSSProperties}
+                                        lazyPreloaderClass="swiper-lazy-preloader"
+                                        lazyPreloadPrevNext={1}
+                                        spaceBetween={30}
+                                        slidesPerView={1}
+                                        navigation={true}
+                                        pagination={{ clickable: true, dynamicBullets: true }}
+                                        modules={[Navigation, Pagination]}
+                                        className="mySwiper"
+                                    >
+                                        <SwiperSlide className='relative'>
+                                            {file ? <img src={URL.createObjectURL(file)} alt="menu" className="w-full h-[200px] object-cover" /> : <img src="https://placehold.co/40x30" alt="menu" className="w-full h-[200px] object-cover" />}
+                                        </SwiperSlide>
+                                        {files.map((file, index) => (
+                                            <SwiperSlide className='relative' key={index}>
+                                                <img src={URL.createObjectURL(file)} alt="menu" className="w-full h-[200px] object-cover" />
+                                                <div className="swiper-lazy-preloader swiper-lazy-preloader-red"></div>
+                                            </SwiperSlide>
+                                        ))}
+                                    </Swiper>
+                                </div>
                                 <div className="px-4 py-2">
                                     {form.watch("code") && <h6 className="text-xs text-gray-500">Code: {form.watch("code")}</h6>}
                                     <h3 className="font-semibold">{form.watch("name")}</h3>

@@ -70,7 +70,7 @@ export function DataTable({ columns, data }: any) {
         count: rows.length,
         getScrollElement: () => parentRef.current,
         estimateSize: () => 34,
-        overscan: 10,
+        overscan: 50,
     })
 
     return (

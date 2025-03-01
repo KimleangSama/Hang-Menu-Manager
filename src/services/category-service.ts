@@ -7,7 +7,6 @@ class CategoryService extends APIService {
     async listCategories(storeId: string): Promise<BaseResponse<CategoryResponse[]>> {
         try {
             const response = await this.get<BaseResponse<CategoryResponse[]>>(`/categories/of-store/${storeId}/list`);
-            console.log(response)
             return response;
         } catch (error) {
             console.error(error)

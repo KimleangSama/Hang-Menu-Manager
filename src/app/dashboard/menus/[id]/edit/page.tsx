@@ -1,7 +1,7 @@
 "use client";
 
 import DashboardPage from "@/app/dashboard/page"
-import { CustomDragDrop } from "@/components/shared/form/image/custom-drag-drop";
+import { CustomDragDrop, FileFormat } from "@/components/shared/form/image/custom-drag-drop";
 import ImageUpload from "@/components/shared/form/image/image-upload";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { API_IMAGE_URL } from "@/constants/auth";
 import { BADGES } from "@/constants/badges";
 import { useStoreResponse } from "@/hooks/use-store"
 import { getCurrencySign, getFullPrice } from "@/lib/helpers";
@@ -26,6 +27,12 @@ import { useForm } from "react-hook-form"
 import { FaFacebook, FaInstagram, FaTelegram } from "react-icons/fa";
 import { toast } from "sonner";
 import { z } from "zod"
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation } from 'swiper/modules';
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+
 
 const EditPage = () => {
     const store = useStoreResponse(state => state.store);
@@ -35,8 +42,8 @@ const EditPage = () => {
             code: '',
             name: '',
             description: '',
-            price: "0",
-            discount: "0",
+            price: "",
+            discount: "",
             currency: "dollar",
             image: '',
             images: [],
@@ -48,56 +55,120 @@ const EditPage = () => {
         resolver: zodResolver(editMenuSchema),
     })
     const [file, setFile] = useState<File | null>(null);
+    const [files, setFiles] = useState<File[]>([]);
+    const [images, setImages] = useState<FileFormat[]>([]);
     const [categories, setCategories] = useState<CategoryResponse[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     const onSubmit = async (data: EditMenuFormData) => {
-        console.log(data)
+        setIsSubmitting(true);
+        const res = await menuService.updateMenu(params.id, data);
+        console.log(res)
+        if (res.success) {
+            setMessage({ type: "success", text: "Menu updated successfully" });
+        } else {
+            setMessage({ type: "error", text: res.error });
+        }
+        setIsSubmitting(false);
+    }
+
+    function uploadImages(uploadedImages: File[], fileFormats: FileFormat[]) {
+        setFiles([...files, ...uploadedImages]);
+        setImages([...images, ...fileFormats]);
+    }
+
+    function deleteImage(indexImg: number) {
+        const updatedList = images.filter((_ele, index) => index !== indexImg);
+        setFiles(files.filter((_ele, index) => index !== indexImg));
+        setImages(updatedList);
     }
 
     useEffect(() => {
-        async function listCategories() {
+        async function getCategoryAndMenuInfo() {
             if (store && store.id) {
-                const response = await categoryService.listCategories(store?.id);
-                if (response.success) {
-                    setCategories(response.payload);
+                const res = await categoryService.listCategories(store?.id);
+                if (res.success) {
+                    setCategories(res.payload);
+                    const response = await menuService.getMenuById(params.id);
+                    if (response.success) {
+                        const { code, name, description, price, discount, currency, badges, image, images, categoryId, available } = response.payload;
+                        console.log(response.payload)
+                        form.setValue('code', code);
+                        form.setValue('name', name);
+                        form.setValue('description', description);
+                        form.setValue('price', String(price));
+                        form.setValue('discount', String(discount));
+                        form.setValue('currency', currency);
+                        form.setValue('image', image);
+                        form.setValue('images', images);
+                        form.setValue('badges', badges);
+                        form.setValue('categoryId', categoryId);
+                        form.setValue('available', available);
+                        form.setValue('storeId', store.id);
+                        if (image) {
+                            const response = await fetch(API_IMAGE_URL + image);
+                            if (!response.ok) {
+                                throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+                            }
+                            const blob = await response.blob();
+                            console.log(image)
+                            setFile(new File([blob], image, { type: 'image/jpeg' }));
+                        }
+                        if (images && images.length > 0) {
+                            const fileFormats = images.map(img => ({ name: img.name, photo: API_IMAGE_URL + img.name, type: 'image/jpeg', size: 0 }));
+                            const processFiles = async () => {
+                                const filePromises = fileFormats.map(async (fileFormat) => {
+                                    try {
+                                        const response = await fetch(fileFormat.photo);
+                                        if (!response.ok) {
+                                            throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+                                        }
+                                        const blob = await response.blob();
+                                        return new File([blob], fileFormat.name, { type: 'image/jpeg' });
+                                    } catch (error) {
+                                        console.error("Error fetching image:", error);
+                                        return null; // or handle the error in another way
+                                    }
+                                });
+                                const resolvedFiles = await Promise.all(filePromises);
+                                const validFiles = resolvedFiles.filter((file) => file !== null) as File[];
+                                setFiles(validFiles);
+                                setImages(fileFormats);
+                            };
+                            processFiles();
+                        }
+                    } else {
+                        toast.error(response.error);
+                        setMessage({ type: "error", text: response.error });
+                    }
                 } else {
-                    toast.error(response.error);
-                    setMessage({ type: "error", text: response.error });
+                    toast.error(res.error);
+                    setMessage({ type: "error", text: res.error });
                 }
             }
         }
-        async function getMenuById() {
-            if (params.id) {
-                const response = await menuService.getMenuById(params.id);
-                if (response.success) {
-                    const { code, name, description, price, discount, currency, badges, image, categoryId, available } = response.payload;
-                    console.log(response.payload)
-                    form.setValue('code', code);
-                    form.setValue('name', name);
-                    form.setValue('description', description);
-                    form.setValue('price', String(price));
-                    form.setValue('discount', String(discount));
-                    form.setValue('currency', currency);
-                    form.setValue('image', image);
-                    form.setValue('badges', badges);
-                    form.setValue('categoryId', categoryId);
-                    form.setValue('available', available);
-                } else {
-                    toast.error(response.error);
-                    setMessage({ type: "error", text: response.error });
-                }
-            }
-        }
-        listCategories();
-        getMenuById();
-    }, []);
+        getCategoryAndMenuInfo();
+    }, [store, params.id])
+
+    if (!store) {
+        return (
+            <DashboardPage>
+                <div className='mx-auto w-full max-w-full flex flex-wrap items-start justify-center'>
+                    <div className="p-4 space-y-6 overflow-auto">
+                        <div className="sticky top-1 z-10 flex justify-between items-center">
+                            <h1 className="text-3xl font-bold">Loading...</h1>
+                        </div>
+                    </div>
+                </div>
+            </DashboardPage>
+        );
+    }
 
     return (
         <DashboardPage>
-            <div className='mx-auto w-full max-w-full flex flex-wrap items-start justify-center'>
-                <div className="p-4 space-y-6 overflow-auto">
+            <div className='max-w-full flex xl:flex-nowrap flex-wrap'>
+                <div className="p-4 w-full space-y-6 overflow-auto">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             <div className="sticky top-1 z-10 flex justify-between items-center">
@@ -109,6 +180,33 @@ const EditPage = () => {
                             <Card className="p-6">
                                 {message && <Alert className={`mb-2 ${message.type === 'error' ? 'border-red-400' : 'text-green-400 border-green-400'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
                                 <div className='grid grid-cols-2 gap-4'>
+                                    <div className='space-y-2'>
+                                        <ImageUpload
+                                            title='Upload Image'
+                                            onUpload={(file) => {
+                                                setFile(file);
+                                            }}
+                                            displayRemote={true}
+                                            previewUrl={file ? URL.createObjectURL(file) : undefined}
+                                        />
+                                        {/* <img src={file ? URL.createObjectURL(file) : undefined} alt="menu" onError={(e) => { e.currentTarget.src = "https://placehold.co/600x400" }} className="px-4 w-full h-[200px] object-cover" /> */}
+                                    </div>
+
+                                    <div className='space-y-2'>
+                                        <div className="grid gap-4">
+                                            <div className="bg-white dark:bg-[#111111] border rounded-md w-full px-5 pt-3 pb-5">
+                                                <Label>Slide Images</Label>
+                                                <CustomDragDrop
+                                                    pictures={images}
+                                                    onUpload={uploadImages}
+                                                    onDelete={deleteImage}
+                                                    count={4}
+                                                    formats={["jpg", "jpeg", "png"]}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div className="space-y-2">
                                         <FormField
                                             name='code'
@@ -205,7 +303,7 @@ const EditPage = () => {
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Price {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
+                                                    <FormLabel>Price {getCurrencySign(form.getValues('currency'))}</FormLabel>
                                                     <FormControl>
                                                         <Input {...field} type='number' />
                                                     </FormControl>
@@ -221,7 +319,7 @@ const EditPage = () => {
                                             control={form.control}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Discount {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
+                                                    <FormLabel>Discount {getCurrencySign(form.getValues('currency'))}</FormLabel>
                                                     <FormControl>
                                                         <Input {...field} type='number' />
                                                     </FormControl>
@@ -297,33 +395,6 @@ const EditPage = () => {
                                             )}
                                         />
                                     </div>
-
-                                    <div className='space-y-2'>
-                                        <ImageUpload
-                                            title='Upload Image'
-                                            onUpload={(file) => {
-                                                setFile(file);
-                                            }}
-                                            previewUrl={file ? URL.createObjectURL(file) : undefined}
-                                        />
-                                    </div>
-
-                                    <div className='space-y-2'>
-                                        <div className="grid gap-4">
-                                            <div className="bg-white dark:bg-[#111111] border rounded-md w-full px-5 pt-3 pb-5">
-                                                <Label>Slide Images</Label>
-                                                <CustomDragDrop
-                                                    pictures={[]}
-                                                    onUpload={(files) => {
-                                                    }}
-                                                    onDelete={(file) => {
-                                                    }}
-                                                    count={4}
-                                                    formats={["jpg", "jpeg", "png"]}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </Card>
                         </form>
@@ -342,7 +413,7 @@ const EditPage = () => {
                             <div
                                 className="relative cursor-pointer border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                             >
-                                <div className="absolute top-2 left-2 flex flex-wrap gap-y-1 items-center">
+                                <div className="absolute top-2 left-2 flex flex-wrap gap-y-1 items-center z-[9999]">
                                     {form.watch('badges')?.map((badge, index) => {
                                         const matchedBadge = BADGES.find(b => b.name.toLowerCase() === badge.toLowerCase());
                                         return (
@@ -353,7 +424,34 @@ const EditPage = () => {
                                         );
                                     })}
                                 </div>
-                                {file ? <img src={URL.createObjectURL(file)} alt="menu" className="w-full h-[200px] object-cover" /> : <img src="https://placehold.co/600x400" alt="menu" className="w-full h-[200px] object-cover" />}
+                                <div className='w-full'>
+                                    <Swiper
+                                        style={{ "--swiper-navigation-color": "red", "--swiper-pagination-color": "red", "--swiper-pagination-bullet-inactive-color": "blue;", "--swiper-navigation-size": '24px' } as React.CSSProperties}
+                                        lazyPreloaderClass="swiper-lazy-preloader"
+                                        lazyPreloadPrevNext={1}
+                                        spaceBetween={30}
+                                        slidesPerView={1}
+                                        navigation={true}
+                                        pagination={{ clickable: true, dynamicBullets: true }}
+                                        modules={[Navigation, Pagination]}
+                                        className="mySwiper"
+                                    >
+                                        <SwiperSlide className='relative'>
+                                            {file ? <img src={URL.createObjectURL(file)} alt="menu" className="w-full h-[200px] object-cover" /> :
+                                                <img
+                                                    src={API_IMAGE_URL + form.getValues('image')}
+                                                    alt="menu" onError={(e) => { e.currentTarget.src = "https://placehold.co/600x400" }}
+                                                    className="w-full h-[200px] object-cover" />
+                                            }
+                                        </SwiperSlide>
+                                        {files?.map((file, index) => (
+                                            <SwiperSlide className='relative' key={index}>
+                                                <img src={URL.createObjectURL(file)} alt="menu" className="w-full h-[200px] object-cover" />
+                                                <div className="swiper-lazy-preloader swiper-lazy-preloader-red"></div>
+                                            </SwiperSlide>
+                                        ))}
+                                    </Swiper>
+                                </div>
                                 <div className="px-4 py-2">
                                     {form.watch("code") && <h6 className="text-xs text-gray-500">Code: {form.watch("code")}</h6>}
                                     <h3 className="font-semibold">{form.watch("name")}</h3>
@@ -387,4 +485,4 @@ const EditPage = () => {
     )
 }
 
-export default EditPage
+export default EditPage;

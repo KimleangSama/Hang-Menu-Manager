@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Upload, Image, File, X } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import { toast } from "sonner";
+import LongText from "../../text/long-text";
 
 export type FileFormat = {
     name: string;
@@ -167,7 +168,7 @@ export function CustomDragDrop({
                         or drag and drop
                     </div>
                     <div className="text-xs font-normal text-gray-500">
-                        Only two files PNG, JPG or JPEG
+                        Only {count} files PNG, JPG or JPEG
                     </div>
                 </div>
             </div>
@@ -186,12 +187,12 @@ export function CustomDragDrop({
                                                 {img.type.match(/image.*/i) ? <Image size={40} /> : <File size={40} />}
                                             </div>
                                             <div className="flex-col items-start flex space-y-1">
-                                                <div className="text-sm  text-gray-500 dark:text-black">
-                                                    {img.name}
+                                                <div className="text-sm text-gray-500 dark:text-black">
+                                                    {img.name?.replace(/(.{14})..+/, "$1...")}
                                                 </div>
-                                                <div className="text-xs text-gray-400 dark:text-black">{`${Math.floor(
+                                                {img.size > 0 && <div className="text-xs text-gray-400 dark:text-black">{`${Math.floor(
                                                     img.size / 1024
-                                                )} KB`}</div>
+                                                )} KB`}</div>}
                                             </div>
                                         </div>
                                         <div className="flex justify-end">

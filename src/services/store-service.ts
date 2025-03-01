@@ -18,7 +18,6 @@ class StoreService extends APIService {
     async getStoreOfUser(): Promise<BaseResponse<StoreResponse>> {
         try {
             const response = await this.get<BaseResponse<StoreResponse>>(`/stores/mine`);
-            console.log(response)
             return response;
         } catch (error) {
             console.error(error)

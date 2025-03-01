@@ -22,19 +22,17 @@ interface DashboardPageProps {
 }
 
 export default function DashboardPage({ children }: DashboardPageProps) {
-  const { user } = useAuth();
-  if (!user) {
-    redirect('/auth/login');
-  }
+  // const { user } = useAuth();
+  // if (!user) {
+  //   redirect('/auth/login');
+  // }
 
   const store = useStoreResponse((state) => state.store);
-
   useEffect(() => {
     if (!store) {
       async function getStoreInfo() {
         try {
           const response = await storeService.getStoreOfUser();
-          console.log(response)
           if (response.success) {
             useStoreResponse.setState({ store: response.payload });
           } else {
@@ -42,7 +40,7 @@ export default function DashboardPage({ children }: DashboardPageProps) {
               toast.error('You are not authorized to access this page');
               setTimeout(() => {
                 redirect('/auth/login');
-              }, 1500);
+              }, 1000);
             }
           }
         } catch (error) {

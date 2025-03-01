@@ -15,7 +15,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { z } from 'zod';
 import { CreateCategoryFormData, createCategorySchema } from '../../../../types/request/category-request';
 import DashboardPage from '@/app/dashboard/page';
-import ImageUpload from '@/components/shared/form/image/image-upload';
 import { useStoreResponse } from '@/hooks/use-store';
 
 const CreateCategoryPage = () => {
@@ -43,9 +42,9 @@ const CreateCategoryPage = () => {
             if (file) {
                 const fd = new FormData();
                 fd.append("file", file, "menu.png");
-                const uploadResponse = await fileService.uploadFile(fd);
-                if (!uploadResponse.success) throw new Error(uploadResponse.error);
-                data.icon = uploadResponse.payload.name;
+                // const uploadResponse = await fileService.uploadFile(fd);
+                // if (!uploadResponse.success) throw new Error(uploadResponse.error);
+                // data.icon = uploadResponse.payload.name;
             }
             const response = await categoryService.createCategory(data);
             if (response.success) {
@@ -53,7 +52,9 @@ const CreateCategoryPage = () => {
                 toast.success("Menu category created successfully!");
                 setFile(null);
             } else {
-                throw new Error(response.error);
+                if (response.statusCode === 409) {
+                    setMessage({ type: "error", text: "Category with this name already exists." });
+                }
             }
         } catch (error: any) {
             setMessage({ type: "error", text: error.message || "An error occurred." });
@@ -73,7 +74,7 @@ const CreateCategoryPage = () => {
                                 <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating..." : "Create"}</Button>
                             </div>
                             <Card className="p-6">
-                                {message && <Alert className='mb-2' variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
+                                {message && <Alert className={`mb-2 ${message.type === 'error' ? '' : 'text-green-500'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
                                 <div className='grid grid-cols-1 gap-4'>
                                     <div className="space-y-2">
                                         <FormField
@@ -107,7 +108,7 @@ const CreateCategoryPage = () => {
                                         />
                                     </div>
 
-                                    <div className='space-y-2'>
+                                    {/* <div className='space-y-2'>
                                         <ImageUpload
                                             title='Upload Icon'
                                             onUpload={(file) => {
@@ -115,7 +116,7 @@ const CreateCategoryPage = () => {
                                             }}
                                             previewUrl={file ? URL.createObjectURL(file) : ''}
                                         />
-                                    </div>
+                                    </div> */}
                                 </div>
                             </Card>
                         </form>

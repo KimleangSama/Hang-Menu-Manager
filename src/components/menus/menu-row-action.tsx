@@ -47,7 +47,6 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={() => {
-                            setCurrentRow(row.original)
                             router.push(`/dashboard/menus/${row.original.id}/edit`)
                         }}
                     >

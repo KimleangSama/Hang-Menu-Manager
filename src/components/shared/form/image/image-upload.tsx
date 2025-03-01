@@ -17,6 +17,7 @@ import { toast } from "sonner";
 export interface ImageUploadProps {
     title: string;
     onUpload: (file: File) => void;
+    displayRemote?: boolean
     previewUrl?: string;
 }
 
@@ -40,7 +41,7 @@ function centerAspectCrop(
     )
 }
 
-export default function ImageUpload({ title, onUpload, previewUrl }: ImageUploadProps) {
+export default function ImageUpload({ title, onUpload, displayRemote, previewUrl }: ImageUploadProps) {
     const imgRef = useRef<HTMLImageElement>(null)
     const previewCanvasRef = useRef<HTMLCanvasElement>(null)
     const [isCropped, setIsCropped] = useState(false)
@@ -129,8 +130,18 @@ export default function ImageUpload({ title, onUpload, previewUrl }: ImageUpload
                         style={{
                             border: '1px solid black',
                             objectFit: 'contain',
-                            width: completedCrop?.width,
-                            height: completedCrop?.height,
+                            width: '100%',
+                        }}
+                    />
+                </div>
+                <div className={`${displayRemote && !imagePreview && !isCropped ? 'mt-4' : 'hidden'}`}>
+                    <img
+                        src={previewUrl}
+                        alt="Preview"
+                        style={{
+                            border: '1px solid black',
+                            objectFit: 'contain',
+                            width: '100%',
                         }}
                     />
                 </div>

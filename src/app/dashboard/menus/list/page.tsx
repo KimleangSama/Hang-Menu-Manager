@@ -25,6 +25,7 @@ export default function ListMenuPage() {
             if (store) {
                 try {
                     const response = await menuService.listMenus(store.id, 0, 1000);
+                    console.log(response)
                     if (response.success) {
                         setMenus(response.payload);
                     } else {
@@ -37,7 +38,7 @@ export default function ListMenuPage() {
             setLoading(false)
         }
         fetchMenuList();
-    }, []);
+    }, [store]);
 
     return (
         <DashboardPage>
