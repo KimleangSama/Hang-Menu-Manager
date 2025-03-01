@@ -73,11 +73,11 @@ export const coreSideNav: SideNav[] = [
                 url: "/dashboard/menus/create",
             },
             {
-                title: "Batch Create",
+                title: "Batch",
                 url: "/dashboard/menus/batch-create",
             },
             {
-                title: "List Menus",
+                title: "List",
                 url: "/dashboard/menus/list",
             },
         ],

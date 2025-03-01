@@ -69,7 +69,7 @@ export default function DashboardPage({ children }: DashboardPageProps) {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 px-2 py-4 pt-0">
-          <div>
+          <div className="">
             {children}
           </div>
         </div>

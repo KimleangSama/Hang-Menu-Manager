@@ -207,7 +207,7 @@ export default function StoreInfoPage() {
                 )}
 
                 {/* Languages */}
-                {languages.length > 0 && (
+                {languages?.length > 0 && (
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-xl">

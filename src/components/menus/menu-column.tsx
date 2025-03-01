@@ -17,31 +17,28 @@ export const menuColumns: ColumnDef<MenuResponse>[] = [
         ),
         cell: ({ row }) => {
             const { image, name } = row.original
-            console.log(image)
             if (!image) return (<img src={`https://ui-avatars.com/api/?name=` + name} alt='Menu Image' className='rounded w-8 h-8' />)
             return (
                 <Dialog>
                     <DialogTrigger asChild>
                         <div className='flex items-center justify-start cursor-pointer'>
-                            {/* <img
+                            <img
                                 src={API_IMAGE_URL + image}
                                 alt='Menu Image'
                                 className='w-8 h-8 rounded'
                                 onError={(e) => {
                                     e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
                                 }}
-                            /> */}
-                            <Image
+                            />
+                            {/* <Image
                                 src={API_IMAGE_URL + image}
                                 alt='Menu Image'
                                 width={32}
                                 height={32}
-                                blurDataURL='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjQuMywgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/MnkTPAAAACXBIWXMAAB7CAAAewgFu0HU+AAEAAElEQVR4nOzdd3gU5f7H8e9'
-                                placeholder='blur'
                                 onError={(e) => {
                                     e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
                                 }}
-                            />
+                            /> */}
                         </div>
                     </DialogTrigger>
                     <DialogContent className=''>

@@ -53,18 +53,6 @@ export default function ListMenuPage() {
                         {loading ? <DataTableSkeleton columnCount={7} rowCount={15} /> :
                             <DataTable data={menus} columns={menuColumns} />
                         }
-                        {/* {(open === 'delete' || open === 'edit') && (
-                                <EditDeleteAlertDialog
-                                    open={open}
-                                    setOpen={setOpen}
-                                    onEdit={() => {
-                                        console.log('first edit')
-                                    }}
-                                    onDelete={() => {
-                                        console.log('first' + 'delete')
-                                    }}
-                                />
-                            )} */}
                     </div>
                 </TableListContextProvider>
             </div>

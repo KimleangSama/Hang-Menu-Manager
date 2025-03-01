@@ -1,7 +1,7 @@
 import { APIService } from "@/api/base";
 import { BaseResponse } from "../types/base-response";
 import { MenuResponse } from "../types/menu-response";
-import { CreateMenuFormData } from "../types/request/create-menu-request";
+import { CreateMenuFormData } from "../types/request/menu-request";
 
 class MenuService extends APIService {
     async createMenu(data: CreateMenuFormData): Promise<BaseResponse<MenuResponse>> {

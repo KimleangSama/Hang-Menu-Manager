@@ -1,37 +1,36 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import DashboardPage from "@/app/dashboard/page"
+import { CustomDragDrop } from "@/components/shared/form/image/custom-drag-drop";
+import ImageUpload from "@/components/shared/form/image/image-upload";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import DashboardPage from '../../page';
-import { CreateMenuFormData, createMenuSchema } from '../../../../types/request/menu-request';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CategoryResponse } from '../../../../types/category-response';
-import { categoryService } from '@/services/category-service';
-import { toast } from 'sonner';
-import { Textarea } from '@/components/ui/textarea';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { z } from 'zod';
-import { useStoreResponse } from '@/hooks/use-store';
-import { CustomDragDrop, FileFormat } from '@/components/shared/form/image/custom-drag-drop';
-import { compressFile, getCurrencySign, getFullPrice } from '@/lib/helpers';
-import ImageUpload from '@/components/shared/form/image/image-upload';
-import { FaFacebook, FaInstagram, FaTelegram } from 'react-icons/fa';
-import { BADGES } from '@/constants/badges';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { BADGES } from "@/constants/badges";
+import { useStoreResponse } from "@/hooks/use-store"
+import { getCurrencySign, getFullPrice } from "@/lib/helpers";
+import { categoryService } from "@/services/category-service";
+import { menuService } from "@/services/menu-service";
+import { CategoryResponse } from "@/types/category-response";
+import { EditMenuFormData, editMenuSchema } from "@/types/request/menu-request"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { FaFacebook, FaInstagram, FaTelegram } from "react-icons/fa";
+import { toast } from "sonner";
+import { z } from "zod"
 
-const CreateMenuPage = () => {
+const EditPage = () => {
     const store = useStoreResponse(state => state.store);
-    const [file, setFile] = useState<File | null>(null);
-    const [files, setFiles] = useState<File[]>([]);
-    const [images, setImages] = useState<FileFormat[]>([]);
-    const [categories, setCategories] = useState<CategoryResponse[]>([]);
-    const form = useForm<z.infer<typeof createMenuSchema>>({
+    const params = useParams<{ id: string }>();
+    const form = useForm<z.infer<typeof editMenuSchema>>({
         defaultValues: {
             code: '',
             name: '',
@@ -46,91 +45,16 @@ const CreateMenuPage = () => {
             available: true,
             storeId: store?.id || '',
         },
-        resolver: zodResolver(createMenuSchema),
+        resolver: zodResolver(editMenuSchema),
     })
-
+    const [file, setFile] = useState<File | null>(null);
+    const [categories, setCategories] = useState<CategoryResponse[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-    const onSubmit = async (data: CreateMenuFormData) => {
+    const onSubmit = async (data: EditMenuFormData) => {
         console.log(data)
-        // try {
-        //     setIsSubmitting(true);
-        //     setMessage(null);
-
-        //     if (!file) {
-        //         throw new Error("Image is required");
-        //     }
-
-        //     // Create menu
-        //     const response = await menuService.createMenu(data);
-        //     if (response.statusCode === 409) {
-        //         throw new Error("Menu code already exists.");
-        //     } else if (!response.success) {
-        //         throw new Error(response.error);
-        //     }
-
-        //     setMessage({ type: "success", text: "Menu created successfully!" });
-        //     toast.success("Menu created successfully!");
-        //     // form.reset();
-
-        //     const fd = new FormData();
-        //     fd.append("file", file, "menu.png");
-        //     const uploadResponse = await fileService.uploadFile(response.payload.id, fd);
-        //     if (!uploadResponse.success) throw new Error(uploadResponse.error);
-
-        //     //// Upload primary image
-        //     // const fd = new FormData();
-        //     // fd.append("file", await handleCompressFile(file), "menu.png");
-        //     // const uploadResponse = await fileService.uploadFile(fd);
-        //     // if (!uploadResponse.success) throw new Error(uploadResponse.error);
-        //     // data.image = uploadResponse.payload.name;
-
-        //     //// Upload additional images (if any)
-        //     // if (files.length > 0) {
-        //     //     const fdImages = new FormData();
-        //     //     for (const f of files) {
-        //     //         fdImages.append("files", await handleCompressFile(f), f.name);
-        //     //     }
-        //     //     const uploadImagesResponse = await fileService.uploadFiles(fdImages);
-        //     //     if (!uploadImagesResponse.success) throw new Error(uploadImagesResponse.error);
-        //     //     data.images = uploadImagesResponse.payload.map(image => {
-        //     //         return {
-        //     //             name: image.name,
-        //     //             url: image.url,
-        //     //         };
-        //     //     });
-        //     // }
-        // } catch (error: any) {
-        //     setMessage({ type: "error", text: error.message || "An error occurred." });
-        // } finally {
-        //     setIsSubmitting(false);
-        // }
-    };
-
-    function uploadImages(uploadedImages: File[], fileFormats: FileFormat[]) {
-        setFiles([...files, ...uploadedImages]);
-        setImages([...images, ...fileFormats]);
     }
-
-    function deleteImage(indexImg: number) {
-        const updatedList = images.filter((_ele, index) => index !== indexImg);
-        setFiles(files.filter((_ele, index) => index !== indexImg));
-        setImages(updatedList);
-    }
-
-    const handleCompressFile = async (file: File) => {
-        if (file) {
-            try {
-                const compressedImageFile = await compressFile(file);
-                return compressedImageFile;
-            } catch (error) {
-                console.log({ error });
-                return file;
-            }
-        }
-        return file;
-    };
 
     useEffect(() => {
         async function listCategories() {
@@ -144,19 +68,42 @@ const CreateMenuPage = () => {
                 }
             }
         }
+        async function getMenuById() {
+            if (params.id) {
+                const response = await menuService.getMenuById(params.id);
+                if (response.success) {
+                    const { code, name, description, price, discount, currency, badges, image, categoryId, available } = response.payload;
+                    console.log(response.payload)
+                    form.setValue('code', code);
+                    form.setValue('name', name);
+                    form.setValue('description', description);
+                    form.setValue('price', String(price));
+                    form.setValue('discount', String(discount));
+                    form.setValue('currency', currency);
+                    form.setValue('image', image);
+                    form.setValue('badges', badges);
+                    form.setValue('categoryId', categoryId);
+                    form.setValue('available', available);
+                } else {
+                    toast.error(response.error);
+                    setMessage({ type: "error", text: response.error });
+                }
+            }
+        }
         listCategories();
+        getMenuById();
     }, []);
 
     return (
         <DashboardPage>
-            <div className='mx-auto w-full max-w-full flex items-start justify-center'>
+            <div className='mx-auto w-full max-w-full flex flex-wrap items-start justify-center'>
                 <div className="p-4 space-y-6 overflow-auto">
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             <div className="sticky top-1 z-10 flex justify-between items-center">
-                                <h1 className="text-3xl font-bold">Create Menu</h1>
+                                <h1 className="text-3xl font-bold">Edit Menu Details</h1>
                                 <div className='flex items-center gap-4'>
-                                    <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating..." : "Create"}</Button>
+                                    <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Editing..." : "Edit"}</Button>
                                 </div>
                             </div>
                             <Card className="p-6">
@@ -204,7 +151,7 @@ const CreateMenuPage = () => {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Currency</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
                                                         <FormControl>
                                                             <SelectTrigger>
                                                                 <SelectValue placeholder="Select Currency" />
@@ -231,7 +178,7 @@ const CreateMenuPage = () => {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Category</FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
                                                         <FormControl>
                                                             <SelectTrigger>
                                                                 <SelectValue placeholder="Select Category" />
@@ -293,28 +240,40 @@ const CreateMenuPage = () => {
                                                     <FormLabel>Badge</FormLabel>
                                                     <FormControl>
                                                         <div>
-                                                            {BADGES?.map((badge, index) => (
-                                                                <div key={index} className="flex items-center space-x-2 my-1">
-                                                                    <Checkbox
-                                                                        id={String(badge.id)}
-                                                                        key={index}
-                                                                        onCheckedChange={(checked) => {
-                                                                            if (checked) {
-                                                                                form.setValue("badges", [...(field.value || []), badge.name]);
-                                                                            } else {
-                                                                                form.setValue("badges", (field.value || []).filter((b: string) => b !== badge.name));
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                    <label
-                                                                        htmlFor={String(badge.id)}
-                                                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                                        style={{ color: badge.color }}
-                                                                    >
-                                                                        {badge.name}
-                                                                    </label>
-                                                                </div>
-                                                            ))}
+                                                            {BADGES?.map((badge, index) => {
+                                                                const isChecked = field.value?.some(
+                                                                    (b: string) => b.toLowerCase() === badge.name.toLowerCase()
+                                                                );
+                                                                return (
+                                                                    <div key={index} className="flex items-center space-x-2 my-1">
+                                                                        <Checkbox
+                                                                            id={String(badge.id)}
+                                                                            key={index}
+                                                                            checked={isChecked}
+                                                                            onCheckedChange={(checked) => {
+                                                                                let updatedBadges = field.value || [];
+                                                                                if (checked) {
+                                                                                    if (!updatedBadges.some(b => b.toLowerCase() === badge.name.toLowerCase())) {
+                                                                                        updatedBadges = [...updatedBadges, badge.name];
+                                                                                    }
+                                                                                } else {
+                                                                                    updatedBadges = updatedBadges.filter(
+                                                                                        (b) => b.toLowerCase() !== badge.name.toLowerCase()
+                                                                                    );
+                                                                                }
+                                                                                form.setValue("badges", updatedBadges);
+                                                                            }}
+                                                                        />
+                                                                        <label
+                                                                            htmlFor={String(badge.id)}
+                                                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                                            style={{ color: badge.color }}
+                                                                        >
+                                                                            {badge.name}
+                                                                        </label>
+                                                                    </div>
+                                                                )
+                                                            })}
                                                         </div>
                                                     </FormControl>
                                                     <FormMessage />
@@ -354,9 +313,11 @@ const CreateMenuPage = () => {
                                             <div className="bg-white dark:bg-[#111111] border rounded-md w-full px-5 pt-3 pb-5">
                                                 <Label>Slide Images</Label>
                                                 <CustomDragDrop
-                                                    pictures={images}
-                                                    onUpload={uploadImages}
-                                                    onDelete={deleteImage}
+                                                    pictures={[]}
+                                                    onUpload={(files) => {
+                                                    }}
+                                                    onDelete={(file) => {
+                                                    }}
                                                     count={4}
                                                     formats={["jpg", "jpeg", "png"]}
                                                 />
@@ -382,13 +343,15 @@ const CreateMenuPage = () => {
                                 className="relative cursor-pointer border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                             >
                                 <div className="absolute top-2 left-2 flex flex-wrap gap-y-1 items-center">
-                                    {form.watch('badges')?.map((badge, index) => (
-                                        <div key={index} className="text-white text-[10px] px-1.5 py-0.5 rounded-md mr-1"
-                                            style={{ backgroundColor: BADGES.find(b => b.name === badge)?.color }}
-                                        >
-                                            {BADGES.find(b => b.name === badge)?.name}
-                                        </div>
-                                    ))}
+                                    {form.watch('badges')?.map((badge, index) => {
+                                        const matchedBadge = BADGES.find(b => b.name.toLowerCase() === badge.toLowerCase());
+                                        return (
+                                            <div key={index} className="text-white text-[10px] px-1.5 py-0.5 rounded-md mr-1"
+                                                style={{ backgroundColor: matchedBadge?.color || 'gray' }}>
+                                                {matchedBadge?.name || badge}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                                 {file ? <img src={URL.createObjectURL(file)} alt="menu" className="w-full h-[200px] object-cover" /> : <img src="https://placehold.co/600x400" alt="menu" className="w-full h-[200px] object-cover" />}
                                 <div className="px-4 py-2">
@@ -421,7 +384,7 @@ const CreateMenuPage = () => {
                 </div>
             </div>
         </DashboardPage>
-    );
-};
+    )
+}
 
-export default CreateMenuPage;
+export default EditPage

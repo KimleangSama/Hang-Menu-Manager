@@ -7,6 +7,7 @@ export interface MenuResponse {
     discount: number
     currency: string
     image: string
+    badges: string[]
     categoryId: string
     categoryName: string
     hidden: boolean
