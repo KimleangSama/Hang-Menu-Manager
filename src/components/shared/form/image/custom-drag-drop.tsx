@@ -2,7 +2,8 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Upload, Image, File, X } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import { toast } from "sonner";
-import LongText from "../../text/long-text";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { SheetTitle } from "@/components/ui/sheet";
 
 export type FileFormat = {
     name: string;
@@ -214,6 +215,11 @@ export function CustomDragDrop({
                                 </div>
                             </DialogTrigger>
                             <DialogContent className="z-[100] p-2 shadow-xl rounded-md flex justify-center">
+                                <VisuallyHidden>
+                                    <SheetTitle>
+                                        Menu
+                                    </SheetTitle>
+                                </VisuallyHidden>
                                 <img src={img.photo} alt={img.name} className="object-cover" />
                             </DialogContent>
                         </Dialog>

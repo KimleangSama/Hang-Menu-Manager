@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { AppSidebar } from "@/components/app-sidebar"
 import { NavBreadcrumbs } from "@/components/nav-breadcrumbs"
@@ -10,18 +10,16 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { useAuth } from "@/hooks/use-auth"
+// import { useAuth } from "@/hooks/use-auth"
+import { ReactNode } from "react";
 import { useStoreResponse } from "@/hooks/use-store"
 import { storeService } from "@/services/store-service"
 import { redirect } from "next/navigation"
 import { useEffect } from "react"
 import { toast } from "sonner"
 
-interface DashboardPageProps {
-  children: React.ReactNode
-}
 
-export default function DashboardPage({ children }: DashboardPageProps) {
+export default function DashboardPage({ children }: { children: ReactNode }) {
   // const { user } = useAuth();
   // if (!user) {
   //   redirect('/auth/login');

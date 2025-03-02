@@ -1,14 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import DashboardPage from "../../page";
-import { useStoreResponse } from "@/hooks/use-store";
+import DashboardPage from "../../layout";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 export default function BatchPage() {
-    const store = useStoreResponse(state => state.store);
-
     return (
         <DashboardPage>
             <div className='mx-auto max-w-6xl gap-4'>

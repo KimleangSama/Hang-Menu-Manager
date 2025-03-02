@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardPage from "../../page";
+import DashboardPage from "../../layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Phone, Mail, CreditCard, Store, Globe } from "lucide-react";

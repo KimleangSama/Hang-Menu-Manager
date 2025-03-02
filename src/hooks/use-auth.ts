@@ -4,7 +4,6 @@ import { ACCESS_TOKEN, API_BASE_URL } from '@/constants/auth'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import axios from 'axios'
-import { toast } from 'sonner'
 
 interface User {
     id: string

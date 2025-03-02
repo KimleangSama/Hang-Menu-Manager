@@ -7,14 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { categoryService } from '@/services/category-service';
 import { toast } from 'sonner';
-import { fileService } from '@/services/file-service';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { z } from 'zod';
 import { CreateCategoryFormData, createCategorySchema } from '../../../../types/request/category-request';
-import DashboardPage from '@/app/dashboard/page';
+import DashboardPage from '@/app/dashboard/layout';
 import { useStoreResponse } from '@/hooks/use-store';
 
 const CreateCategoryPage = () => {
@@ -56,7 +55,9 @@ const CreateCategoryPage = () => {
                     setMessage({ type: "error", text: "Category with this name already exists." });
                 }
             }
-        } catch (error: any) {
+        } 
+        /* eslint-disable  @typescript-eslint/no-explicit-any */
+        catch (error: any) {
             setMessage({ type: "error", text: error.message || "An error occurred." });
         } finally {
             setIsSubmitting(false);

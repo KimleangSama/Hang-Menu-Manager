@@ -1,6 +1,5 @@
 // api-client.js (or utils/api-client.js)
 import { ACCESS_TOKEN } from '@/constants/auth';
-import { useAuth } from '@/hooks/use-auth';
 import axios from 'axios';
 
 // Create an Axios instance with default configurations

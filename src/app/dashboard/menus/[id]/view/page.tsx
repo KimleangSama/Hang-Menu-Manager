@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
-import DashboardPage from '../../../page';
+import DashboardPage from '../../../layout';
 import { menuService } from '@/services/menu-service';
 import { toast } from 'sonner';
 

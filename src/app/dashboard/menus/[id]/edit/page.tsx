@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardPage from "@/app/dashboard/page"
+import DashboardPage from "@/app/dashboard/layout"
 import { CustomDragDrop, FileFormat } from "@/components/shared/form/image/custom-drag-drop";
 import ImageUpload from "@/components/shared/form/image/image-upload";
 import { Alert, AlertDescription } from "@/components/ui/alert";

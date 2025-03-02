@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import DashboardPage from '../../page';
+import DashboardPage from '../../layout';
 import { CreateMenuFormData, createMenuSchema } from '../../../../types/request/menu-request';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CategoryResponse } from '../../../../types/category-response';
@@ -92,7 +92,9 @@ const CreateMenuPage = () => {
                 const uploadImagesResponse = await fileService.uploadFiles(response.payload.id, 'menu', slideImagesFD);
                 if (!uploadImagesResponse.success) throw new Error(uploadImagesResponse.error);
             }
-        } catch (error: any) {
+        } 
+        /* eslint-disable  @typescript-eslint/no-explicit-any */
+        catch (error: any) {
             setMessage({ type: "error", text: error.message || "An error occurred." });
         } finally {
             setIsSubmitting(false);
@@ -119,7 +121,7 @@ const CreateMenuPage = () => {
                     setCategories(response.payload);
                 } else {
                     toast.error(response.error);
-                    setMessage({ type: "error", text: response.error });
+                    setMessage({ type: "error", text: response.error || '' });
                 }
             }
         }
@@ -159,6 +161,7 @@ const CreateMenuPage = () => {
                                             onUpload={(file) => {
                                                 setFile(file);
                                             }}
+                                            displayRemote={false}
                                             previewUrl={file ? URL.createObjectURL(file) : undefined}
                                         />
                                     </div>
@@ -347,7 +350,7 @@ const CreateMenuPage = () => {
                                                 <FormItem>
                                                     <FormLabel>Description</FormLabel>
                                                     <FormControl>
-                                                        <Textarea {...field} />
+                                                        <Textarea maxLength={144} {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -363,14 +366,14 @@ const CreateMenuPage = () => {
                     <div className="collapse top-1 z-10">
                         <h1 className="text-3xl font-bold">Create Menu</h1>
                     </div>
-                    <div className="sticky top-0 mx-auto border-gray-800 dark:border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] w-[300px]">
+                    <div className="sticky top-0 mx-auto border-gray-800 dark:border-gray-700 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] w-[300px]">
                         <div className="h-[32px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -start-[17px] top-[72px] rounded-s-lg"></div>
                         <div className="h-[46px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg"></div>
                         <div className="h-[46px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -start-[17px] top-[178px] rounded-s-lg"></div>
                         <div className="h-[64px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -end-[17px] top-[142px] rounded-e-lg"></div>
                         <div className="rounded-[2rem] w-[272px] h-[572px] bg-white dark:bg-gray-800 px-2 py-4 space-y-6 flex flex-col justify-center overflow-auto max-h-full">
                             <div
-                                className="relative cursor-pointer border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                                className="relative cursor-pointer border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow dark:border dark:border-white"
                             >
                                 <div className="absolute top-2 left-2 flex flex-wrap gap-y-1 items-center z-[9999]">
                                     {form.watch('badges')?.map((badge, index) => (
@@ -407,9 +410,9 @@ const CreateMenuPage = () => {
                                 <div className="px-4 py-2">
                                     {form.watch("code") && <h6 className="text-xs text-gray-500">Code: {form.watch("code")}</h6>}
                                     <h3 className="font-semibold">{form.watch("name")}</h3>
-                                    <div className='overflow-scroll'>
-                                        <p className="text-gray-500 text-xs overflow-auto text-ellipsis">{form.watch("description")}</p>
-                                    </div>
+                                    <article className='text-pretty overflow-auto'>
+                                        <p className="text-gray-500 text-xs">{form.watch("description")}</p>
+                                    </article>
                                     {form.watch('discount') && Number(form.watch('discount')) > 0 && <p className='text-red-500 line-through'>{getFullPrice(form.watch('currency'), Number(form.watch('discount')), Number(form.watch('price')))}</p>}
                                     <p style={{ color: store?.color }}>{getCurrencySign(form.watch('currency'))}{Number(form.watch('price'))}</p>
                                 </div>

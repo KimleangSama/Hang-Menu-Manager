@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
-import DashboardPage from '../../../page';
+import DashboardPage from '../../../layout';
 import { toast } from 'sonner';
 
 import { useParams } from 'next/navigation';

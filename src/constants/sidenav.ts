@@ -1,24 +1,14 @@
 import {
-    AudioWaveform,
-    BookOpen,
-    Bot,
     ChartBarStacked,
-    Command,
-    Frame,
-    GalleryVerticalEnd,
     ListStart,
-    Map,
     MenuSquare,
     MessageSquareDot,
     PieChart,
-    Settings2,
-    SquareTerminal,
     Store,
-    Table,
     UsersIcon,
-    UtensilsCrossed,
 } from "lucide-react"
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 export interface SideNav {
     title: string
     url: string
@@ -72,10 +62,10 @@ export const coreSideNav: SideNav[] = [
                 title: "Create",
                 url: "/dashboard/menus/create",
             },
-            {
-                title: "Batch",
-                url: "/dashboard/menus/batch",
-            },
+            // {
+            //     title: "Batch",
+            //     url: "/dashboard/menus/batch",
+            // },
             {
                 title: "List",
                 url: "/dashboard/menus/list",
@@ -86,6 +76,7 @@ export const coreSideNav: SideNav[] = [
         title: "Category",
         url: "/dashboard/categories",
         icon: ChartBarStacked,
+        isActive: true,
         items: [
             {
                 title: "Create",

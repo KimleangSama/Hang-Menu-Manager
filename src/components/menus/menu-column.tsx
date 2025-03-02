@@ -2,12 +2,13 @@ import { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/shared/table/data-table-column-header'
 import LongText from '@/components/shared/text/long-text'
-import { API_BASE_URL, API_IMAGE_URL } from '@/constants/auth'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
+import { API_IMAGE_URL } from '@/constants/auth'
 import { MenuResponse } from '../../types/menu-response'
 import { DataTableRowActions } from './menu-row-action'
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
 import Image from 'next/image'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import { SheetTitle } from '../ui/sheet'
 
 export const menuColumns: ColumnDef<MenuResponse>[] = [
     {
@@ -42,6 +43,11 @@ export const menuColumns: ColumnDef<MenuResponse>[] = [
                         </div>
                     </DialogTrigger>
                     <DialogContent className=''>
+                        <VisuallyHidden>
+                            <SheetTitle>
+                                Menu
+                            </SheetTitle>
+                        </VisuallyHidden>
                         <div className='flex items-center justify-center'>
                             <Image
                                 src={API_IMAGE_URL + image}

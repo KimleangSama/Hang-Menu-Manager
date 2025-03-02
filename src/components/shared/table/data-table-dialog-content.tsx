@@ -10,7 +10,7 @@ interface DataTableDialogContentProps {
     children: React.ReactNode;
     open: string;
     setOpen: (str: TableListDialogType | null) => void,
-    onConfirmDelete?: () => void
+    onConfirmDelete: () => void
 }
 
 const DataTableDialogContent = ({ children, open, setOpen, onConfirmDelete }: DataTableDialogContentProps) => {
@@ -52,7 +52,7 @@ const DataTableDialogContent = ({ children, open, setOpen, onConfirmDelete }: Da
                             Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction onClick={() => {
-                            onConfirmDelete && onConfirmDelete()
+                            onConfirmDelete()
                             setOpen(null)
                         }}>
                             Confirm

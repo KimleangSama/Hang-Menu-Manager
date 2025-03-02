@@ -24,6 +24,10 @@ export function DataTableExportOptions<TData>({
                     variant='outline'
                     size='sm'
                     className='ml-auto hidden h-8 lg:flex'
+                    onClick={() => {
+                        console.log(table.getFlatHeaders())
+                        toast('Exporting as CSV...')
+                    }}
                 >
                     Export
                 </Button>

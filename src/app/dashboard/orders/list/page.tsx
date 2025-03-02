@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DashboardPage from "../../page";
+import DashboardPage from "../../layout";
 import TableListContextProvider, { TableListDialogType } from "@/providers/table-list-provider";
 import useDialogState from "@/hooks/use-dialog";
 import { toast } from "sonner";
-import Link from "next/link";
 import { OrderListResponse } from "@/types/order-response";
 import { orderService } from "@/services/order-service";
 import { useStoreResponse } from "@/hooks/use-store";

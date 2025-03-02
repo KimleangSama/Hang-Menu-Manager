@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import DashboardPage from "../../page";
+import DashboardPage from "../../layout";
 import { storeService } from "@/services/store-service";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Clock, CreditCard, Plus, Minus, Save, Loader2, DollarSign, Copy } from "lucide-react";
+import { Clock, CreditCard, Plus, Minus, Save, Loader2, DollarSign } from "lucide-react";
 import { UpdateStoreFormValues, UpdateStoreRequest } from "../../../../types/request/update-store-request";
 import { toast } from "sonner";
 import { mapUpdateStoreFormValues, resetUpdateStoreForm } from "@/lib/update-store";
@@ -78,7 +78,7 @@ export default function StoreUpdatePage() {
             if (file) {
                 const formData = new FormData();
                 formData.append('file', file);
-                const response = await fileService.uploadFile(formData);
+                const response = await fileService.updateFile(formData);
                 if (response.success) {
                     data.logo = response.payload.url;
                 } else {
@@ -233,7 +233,7 @@ export default function StoreUpdatePage() {
                                     <FormField
                                         control={form.control}
                                         name="logo"
-                                        render={({ field }) => (
+                                        render={({  }) => (
                                             <FormItem>
                                                 <FormLabel>Logo</FormLabel>
                                                 <FormControl>
@@ -252,7 +252,7 @@ export default function StoreUpdatePage() {
                                                                         onUpload={(file) => {
                                                                             setFile(file);
                                                                         }}
-                                                                        previewUrl={file ? URL.createObjectURL(file) : ''}
+                                                                        previewUrl={file ? URL.createObjectURL(file) : undefined}
                                                                     />
                                                                 </div>
                                                             </DialogContent>

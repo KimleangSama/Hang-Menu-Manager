@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,11 +50,14 @@ export default function Page() {
   }
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     login(data.username, data.password).then((res: any) => {
       if (res?.success) {
         toast.success("Successfully logged in")
       }
-    }).catch((error: any) => {
+    })
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
+    .catch((error: any) => {
       toast.error("" + error)
     })
   }
