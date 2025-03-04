@@ -55,7 +55,7 @@ const CreateCategoryPage = () => {
                     setMessage({ type: "error", text: "Category with this name already exists." });
                 }
             }
-        } 
+        }
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         catch (error: any) {
             setMessage({ type: "error", text: error.message || "An error occurred." });
@@ -65,66 +65,54 @@ const CreateCategoryPage = () => {
     };
 
     return (
-        <DashboardPage>
-            <div className='mx-auto max-w-4xl'>
-                <div className="p-4 space-y-6">
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            <div className="sticky top-1 z-10 flex justify-between items-center">
-                                <h1 className="text-3xl font-bold">Create Menu Category</h1>
-                                <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating..." : "Create"}</Button>
-                            </div>
-                            <Card className="p-6">
-                                {message && <Alert className={`mb-2 ${message.type === 'error' ? '' : 'text-green-500'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
-                                <div className='grid grid-cols-1 gap-4'>
-                                    <div className="space-y-2">
-                                        <FormField
-                                            name='name'
-                                            control={form.control}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Name</FormLabel>
-                                                    <FormControl>
-                                                        <Input {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <FormField
-                                            name='description'
-                                            control={form.control}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Description</FormLabel>
-                                                    <FormControl>
-                                                        <Textarea {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    {/* <div className='space-y-2'>
-                                        <ImageUpload
-                                            title='Upload Icon'
-                                            onUpload={(file) => {
-                                                setFile(file);
-                                            }}
-                                            previewUrl={file ? URL.createObjectURL(file) : ''}
-                                        />
-                                    </div> */}
+        <div className='mx-auto max-w-4xl'>
+            <div className="p-4 space-y-6">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="sticky top-1 z-10 flex justify-between items-center">
+                            <h1 className="text-3xl font-bold">Create Menu Category</h1>
+                            <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating..." : "Create"}</Button>
+                        </div>
+                        <Card className="p-6">
+                            {message && <Alert className={`mb-2 ${message.type === 'error' ? '' : 'text-green-500'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
+                            <div className='grid grid-cols-1 gap-4'>
+                                <div className="space-y-2">
+                                    <FormField
+                                        name='name'
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Name</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
-                            </Card>
-                        </form>
-                    </Form>
-                </div>
+
+                                <div className="space-y-2">
+                                    <FormField
+                                        name='description'
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Description</FormLabel>
+                                                <FormControl>
+                                                    <Textarea {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                            </div>
+                        </Card>
+                    </form>
+                </Form>
             </div>
-        </DashboardPage >
+        </div>
     );
 };
 

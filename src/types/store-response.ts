@@ -16,6 +16,7 @@ export interface StoreResponse {
     createdAt: string
     createdBy: string
     hasPrivilege: boolean
+    groupId?: string
     storeInfoResponse: StoreInfoResponse
 }
 

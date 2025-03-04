@@ -5,4 +5,5 @@ export interface CategoryResponse {
     icon: string
     available: boolean
     hidden: boolean
+    position: number
 }

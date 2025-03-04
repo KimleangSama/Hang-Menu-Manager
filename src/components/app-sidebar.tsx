@@ -11,7 +11,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { accountSideNav, coreSideNav, orderSideNav, staffSideNav } from "@/constants/sidenav"
+import { coreSideNav, orderSideNav, staffSideNav } from "@/constants/sidenav"
 import AppLogo from "./app-logo"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -35,7 +35,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={accountSideNav} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -1,7 +1,5 @@
-"use client";
-
+"use client";;
 import { useEffect, useState } from "react";
-import DashboardPage from "../../layout";
 import TableListContextProvider, { TableListDialogType } from "@/providers/table-list-provider";
 import useDialogState from "@/hooks/use-dialog";
 import { toast } from "sonner";
@@ -37,18 +35,17 @@ export default function ListCategoryPage() {
     }, [store]);
 
     return (
-        <DashboardPage>
-            <div className="p-4 space-y-6">
-                <div className="flex justify-between items-center sticky top-2 z-10 backdrop-blur-sm">
-                    <h1 className="text-3xl font-bold">List Category</h1>
-                    <Link href="/dashboard/categories/create" className="bg-gray-200 px-4 py-1 text-black rounded-md hover:bg-primary-600">
-                        Create
-                    </Link>
-                </div>
-                <TableListContextProvider value={{ open, setOpen, currentRow, setCurrentRow }}>
-                    <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-                        <DataTable data={categories} columns={categoryColumns} />
-                        {/* {(open === 'delete' || open === 'edit') && (
+        <div className="p-4 space-y-6">
+            <div className="flex justify-between items-center sticky top-2 z-10 backdrop-blur-sm">
+                <h1 className="text-3xl font-bold">List Category</h1>
+                <Link href="/dashboard/categories/create" className="bg-gray-200 px-4 py-1 text-black rounded-md hover:bg-primary-600">
+                    Create
+                </Link>
+            </div>
+            <TableListContextProvider value={{ open, setOpen, currentRow, setCurrentRow }}>
+                <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+                    <DataTable data={categories} setData={setCategories} columns={categoryColumns} />
+                    {/* {(open === 'delete' || open === 'edit') && (
                                 <EditDeleteAlertDialog
                                     open={open}
                                     setOpen={setOpen}
@@ -60,9 +57,8 @@ export default function ListCategoryPage() {
                                     }}
                                 />
                             )} */}
-                    </div>
-                </TableListContextProvider>
-            </div>
-        </DashboardPage>
+                </div>
+            </TableListContextProvider>
+        </div>
     )
 }

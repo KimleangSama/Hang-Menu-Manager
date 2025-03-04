@@ -8,6 +8,11 @@ import axios from 'axios'
 interface User {
     id: string
     username: string
+    profileUrl: string
+    email: string
+    roles: string[]
+    createdAt: string
+    updatedAt: string
 }
 
 interface AuthState {
@@ -37,10 +42,10 @@ export const useAuthStore = create<AuthState>()(
                     if (data?.success) {
                         set({ accessToken: data.payload.accessToken, isAuthenticated: true, isLoading: false })
                         await get().fetchUserInfo(data.payload.accessToken)
-                        return data
+                        return data;
                     } else {
                         set({ isLoading: false })
-                        console.log(data)
+                        console.error(data)
                         throw new Error(data?.error)
                     }
                 } catch (error) {
@@ -85,7 +90,7 @@ export const useAuthStore = create<AuthState>()(
                     const { data } = await axios.get(API_BASE_URL + '/auth/me', {
                         headers: { Authorization: `Bearer ${accessToken}` },
                     })
-                    set({ user: data, isAuthenticated: true, isLoading: false })
+                    set({ user: data.payload, isAuthenticated: true, isLoading: false })
                 } catch (error) {
                     get().logout()
                     throw error

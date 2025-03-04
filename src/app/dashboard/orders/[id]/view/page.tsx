@@ -18,7 +18,6 @@ const ViewPage = () => {
     useEffect(() => {
         async function fetchTable() {
             const response = await orderService.getOrderResponseById(params.id);
-            console.log(response)
             if (response.success) {
                 setOrderResponse(response.payload);
             } else {
@@ -31,16 +30,16 @@ const ViewPage = () => {
 
     if (loading) {
         return (
-            <DashboardPage>
+            <>
                 <Card>
                     <p>Loading...</p>
                 </Card>
-            </DashboardPage>
+            </>
         );
     }
 
     return (
-        <DashboardPage>
+        <>
             <div className='mx-auto max-w-6xl grid gap-4'>
                 <div className="p-4 space-y-6">
                     <div className="sticky top-1 z-10 flex justify-between items-center">
@@ -92,7 +91,7 @@ const ViewPage = () => {
                     </div>
                 </div>
             </div>
-        </DashboardPage>
+        </>
     );
 };
 

@@ -14,7 +14,6 @@ class FileService {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-                console.log(response)
                 return response.data;
             }
             throw new Error('Token not found');
@@ -33,7 +32,6 @@ class FileService {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-                console.log(response)
                 return response.data;
             }
             throw new Error('Token not found');
@@ -52,7 +50,6 @@ class FileService {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-                console.log(response)
                 return response.data;
             }
             throw new Error('Token not found');

@@ -10,3 +10,13 @@ export const createCategorySchema = z.object({
 });
 
 export type CreateCategoryFormData = z.infer<typeof createCategorySchema>;
+
+export interface CategoryReorderRequest {
+    storeId: string;
+    categories: CategoryPositionUpdate[];
+}
+
+export interface CategoryPositionUpdate {
+    id: string;
+    position: number;
+}

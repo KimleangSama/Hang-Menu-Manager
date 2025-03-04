@@ -7,7 +7,6 @@ class MenuService extends APIService {
     async createMenu(data: CreateMenuFormData): Promise<BaseResponse<MenuResponse>> {
         try {
             const response = await this.post<BaseResponse<MenuResponse>, CreateMenuFormData>('/menus/create', data);
-            console.log(response)
             return response;
         } catch (error) {
             console.error(error)
@@ -16,7 +15,7 @@ class MenuService extends APIService {
     }
     async listMenus(storeId: string, page: number, size: number): Promise<BaseResponse<MenuResponse[]>> {
         try {
-            const response = await this.get<BaseResponse<MenuResponse[]>>(`/menus/of-store/${storeId}/list?page=${page}&limit=${size}`);
+            const response = await this.get<BaseResponse<MenuResponse[]>>(`/menus/of-store/${storeId}/all/without?page=${page}&limit=${size}`);
             return response;
         } catch (error) {
             console.error(error)
@@ -25,7 +24,7 @@ class MenuService extends APIService {
     }
     async getMenuById(id: string): Promise<BaseResponse<MenuResponse>> {
         try {
-            const response = await this.get<BaseResponse<MenuResponse>>(`/menus/${id}/get`);
+            const response = await this.get<BaseResponse<MenuResponse>>(`/menus/${id}/details`);
             return response;
         } catch (error) {
             console.error(error)

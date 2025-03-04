@@ -6,8 +6,18 @@ import { API_BASE_URL } from '@/constants/auth'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { DataTableRowActions } from './category-row-action'
 import { CategoryResponse } from '../../types/category-response'
+import { RowDragHandleCell } from './category-dnd'
 
 export const categoryColumns: ColumnDef<CategoryResponse>[] = [
+    {
+        accessorKey: 'id-dnd',
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title='Re-Order' className='text-center' />
+        ),
+        cell: ({ row }) => <RowDragHandleCell rowId={row.original.id} />,
+        enableSorting: false,
+        size: 12
+    },
     {
         accessorKey: 'icon',
         header: ({ column }) => (

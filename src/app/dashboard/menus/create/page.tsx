@@ -1,12 +1,10 @@
-"use client";
-
+"use client";;
 import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import DashboardPage from '../../layout';
 import { CreateMenuFormData, createMenuSchema } from '../../../../types/request/menu-request';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CategoryResponse } from '../../../../types/category-response';
@@ -92,7 +90,7 @@ const CreateMenuPage = () => {
                 const uploadImagesResponse = await fileService.uploadFiles(response.payload.id, 'menu', slideImagesFD);
                 if (!uploadImagesResponse.success) throw new Error(uploadImagesResponse.error);
             }
-        } 
+        }
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         catch (error: any) {
             setMessage({ type: "error", text: error.message || "An error occurred." });
@@ -129,7 +127,7 @@ const CreateMenuPage = () => {
     }, [store]);
 
     return (
-        <DashboardPage>
+        <>
             <div className='max-w-full flex xl:flex-nowrap flex-wrap'>
                 <div className="p-4 w-full space-y-6">
                     <Form {...form}>
@@ -141,18 +139,12 @@ const CreateMenuPage = () => {
                                 </div>
                             </div>
                             <Card className="p-6">
-                                {form.formState.errors && form.formState.errors.code && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.code.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.name && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.name.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.currency && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.currency.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.categoryId && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.categoryId.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.price && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.price.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.discount && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.discount.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.description && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.description.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.badges && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.badges.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.image && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.image.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.images && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.images.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.storeId && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.storeId.message}</AlertDescription></Alert>}
-                                {form.formState.errors && form.formState.errors.available && <Alert className="mb-2 border-red-400" variant="destructive"><AlertDescription>{form.formState.errors.available.message}</AlertDescription></Alert>}
+                                {form.formState.errors &&
+                                    Object.entries(form.formState.errors).map(([key, error]) => (
+                                        <Alert key={key} className="mb-2 border-red-400" variant="destructive">
+                                            <AlertDescription>{error.message}</AlertDescription>
+                                        </Alert>
+                                    ))}
                                 {message && <Alert className={`mb-2 ${message.type === 'error' ? 'border-red-400' : 'text-green-400 border-green-400'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
                                 <div className='grid grid-cols-2 gap-4'>
                                     <div className='space-y-2'>
@@ -436,7 +428,7 @@ const CreateMenuPage = () => {
                     </div>
                 </div>
             </div>
-        </DashboardPage>
+        </>
     );
 };
 

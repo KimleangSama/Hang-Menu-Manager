@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 
 export default function BatchPage() {
     return (
-        <DashboardPage>
+        <>
             <div className='mx-auto max-w-6xl gap-4'>
                 <div className="p-4 space-y-6">
                     <div className="sticky top-1 z-10 flex justify-between items-center w-full backdrop:blur-sm">
@@ -39,6 +39,6 @@ export default function BatchPage() {
                     </Card>
                 </div>
             </div>
-        </DashboardPage>
+        </>
     )
 }

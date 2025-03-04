@@ -19,7 +19,7 @@ import { useEffect } from "react"
 import { toast } from "sonner"
 
 
-export default function DashboardPage({ children }: { children: ReactNode }) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   // const { user } = useAuth();
   // if (!user) {
   //   redirect('/auth/login');

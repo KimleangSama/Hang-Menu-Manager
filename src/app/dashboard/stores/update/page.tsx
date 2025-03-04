@@ -149,26 +149,26 @@ export default function StoreUpdatePage() {
 
     if (isLoading) {
         return (
-            <DashboardPage>
+            <>
                 <div className="max-w-4xl mx-auto p-4 space-y-6">
                     <h1 className="text-3xl font-bold">Loading...</h1>
                 </div>
-            </DashboardPage>
+            </>
         );
     }
 
     if (responseError) {
         return (
-            <DashboardPage>
+            <>
                 <div className="max-w-4xl mx-auto p-4 space-y-6">
                     <h1 className="text-3xl font-bold">Failed to fetch store information</h1>
                 </div>
-            </DashboardPage>
+            </>
         )
     }
 
     return (
-        <DashboardPage>
+        <>
             <div className={`max-w-4xl mx-auto p-4 space-y-6`}>
                 <div className="flex justify-between items-center sticky top-2 z-10 backdrop-blur-sm">
                     <h1 className="text-3xl font-bold">Update Store Info</h1>
@@ -233,7 +233,7 @@ export default function StoreUpdatePage() {
                                     <FormField
                                         control={form.control}
                                         name="logo"
-                                        render={({  }) => (
+                                        render={({ }) => (
                                             <FormItem>
                                                 <FormLabel>Logo</FormLabel>
                                                 <FormControl>
@@ -618,6 +618,6 @@ export default function StoreUpdatePage() {
                     </form>
                 </Form>
             </div>
-        </DashboardPage>
+        </>
     );
 }

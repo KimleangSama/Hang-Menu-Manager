@@ -13,6 +13,7 @@ export interface OrderResponse {
 export interface OrderListResponse {
     id: string;
     storeId: string;
+    code: string;
     phoneNumber: string;
     totalAmountInRiel: number;
     totalAmountInDollar: number;

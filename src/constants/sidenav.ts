@@ -17,18 +17,12 @@ export interface SideNav {
     items?: SideNav[]
 }
 
-export const accountSideNav = {
-    name: "John Doe",
-    email: "",
-    avatar: "https://ui-avatars.com/api/?size=128",
-}
-
 export const coreSideNav: SideNav[] = [
     {
         title: "Dashboard",
         url: "/dashboard",
         icon: PieChart,
-        isActive: false,
+        isActive: true,
         items: [
             {
                 title: "Overview",

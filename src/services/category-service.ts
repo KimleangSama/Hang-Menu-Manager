@@ -1,7 +1,7 @@
 import { BaseResponse } from "../types/base-response";
 import { APIService } from "@/api/base";
 import { CategoryResponse } from "../types/category-response";
-import { CreateCategoryFormData } from "../types/request/category-request";
+import { CategoryPositionUpdate, CategoryReorderRequest, CreateCategoryFormData } from "../types/request/category-request";
 
 class CategoryService extends APIService {
     async listCategories(storeId: string): Promise<BaseResponse<CategoryResponse[]>> {
@@ -20,6 +20,22 @@ class CategoryService extends APIService {
         } catch (error) {
             console.error(error)
             throw error
+        }
+    }
+    async reorderCategories(storeId: string, data: CategoryPositionUpdate[]): Promise<BaseResponse<CategoryResponse[]>> {
+        try {
+            const request: CategoryReorderRequest = {
+                storeId: storeId,
+                categories: data
+            }
+            const response = await this.post<BaseResponse<CategoryResponse[]>, CategoryReorderRequest>('/categories/reorder', request);
+            if (!response.success) {
+                throw new Error(`Error: ${response.error}`);
+            }
+            return response;
+        } catch (error) {
+            console.error('Error updating order:', error);
+            throw error;
         }
     }
 }

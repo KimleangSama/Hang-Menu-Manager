@@ -1,7 +1,5 @@
-"use client";
-
+"use client";;
 import { useEffect, useState } from "react";
-import DashboardPage from "../../layout";
 import TableListContextProvider, { TableListDialogType } from "@/providers/table-list-provider";
 import useDialogState from "@/hooks/use-dialog";
 import { toast } from "sonner";
@@ -32,40 +30,26 @@ export default function ListOrderPage() {
                         }
                     }
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 }
             }
             setLoading(false)
         }
         fetchOrderList();
-    }, []);
+    }, [store]);
 
     return (
-        <DashboardPage>
-            <div className="p-4 space-y-6">
-                <div className="flex justify-between items-center sticky top-2 z-10 backdrop-blur-sm">
-                    <h1 className="text-3xl font-bold">List Orders</h1>
-                </div>
-                <TableListContextProvider value={{ open, setOpen, currentRow, setCurrentRow }}>
-                    <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-                        {loading ? <DataTableSkeleton columnCount={7} rowCount={15} /> :
-                            <DataTable data={orders} columns={orderColumns} />
-                        }
-                        {/* {(open === 'delete' || open === 'edit') && (
-                                <EditDeleteAlertDialog
-                                    open={open}
-                                    setOpen={setOpen}
-                                    onEdit={() => {
-                                        console.log('first edit')
-                                    }}
-                                    onDelete={() => {
-                                        console.log('first' + 'delete')
-                                    }}
-                                />
-                            )} */}
-                    </div>
-                </TableListContextProvider>
+        <div className="px-4 py-3 space-y-6">
+            <div className="flex justify-between items-center sticky top-2 z-10 backdrop-blur-sm">
+                <h1 className="text-3xl font-bold">List Orders</h1>
             </div>
-        </DashboardPage>
+            <TableListContextProvider value={{ open, setOpen, currentRow, setCurrentRow }}>
+                <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+                    {loading ? <DataTableSkeleton columnCount={7} rowCount={15} /> :
+                        <DataTable data={orders} columns={orderColumns} />
+                    }
+                </div>
+            </TableListContextProvider>
+        </div>
     )
 }

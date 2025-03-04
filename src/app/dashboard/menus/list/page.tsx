@@ -25,7 +25,6 @@ export default function ListMenuPage() {
             if (store) {
                 try {
                     const response = await menuService.listMenus(store.id, 0, 1000);
-                    console.log(response)
                     if (response.success) {
                         setMenus(response.payload);
                     } else {
@@ -41,7 +40,7 @@ export default function ListMenuPage() {
     }, [store]);
 
     return (
-        <DashboardPage>
+        <>
             <div className="p-4 space-y-6">
                 <div className="flex justify-between items-center sticky top-2 z-10 backdrop-blur-sm">
                     <h1 className="text-3xl font-bold">List Menus</h1>
@@ -57,6 +56,6 @@ export default function ListMenuPage() {
                     </div>
                 </TableListContextProvider>
             </div>
-        </DashboardPage>
+        </>
     )
 }

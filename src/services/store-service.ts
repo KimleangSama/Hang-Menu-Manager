@@ -7,7 +7,6 @@ class StoreService extends APIService {
     async updateStoreInfo(id: string, updateRequest: UpdateStoreRequest): Promise<BaseResponse<StoreResponse>> {
         try {
             const response = await this.put<BaseResponse<StoreResponse>, UpdateStoreRequest>(`/stores/${id}/update`, updateRequest);
-            console.log(response)
             return response;
         } catch (error) {
             console.error(error)

@@ -8,12 +8,18 @@ import { getStatusLabel } from '@/lib/utils'
 
 export const orderColumns: ColumnDef<OrderListResponse>[] = [
     {
+        accessorKey: 'code',
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title='Code' />
+        ),
+        cell: ({ row }) => <div className='w-fit text-nowrap'>{row.getValue('code')}</div>,
+    },
+    {
         accessorKey: 'phoneNumber',
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title='Phone Number' />
         ),
         cell: ({ row }) => <div className='w-fit text-nowrap'>{row.getValue('phoneNumber')}</div>,
-        enableSorting: true,
     },
     {
         accessorKey: 'specialInstructions',
