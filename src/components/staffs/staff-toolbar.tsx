@@ -17,7 +17,7 @@ export function DataTableToolbar<TData>({
         <div className='flex items-center justify-between'>
             <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
                 <Input
-                    placeholder='Filter staffs...'
+                    placeholder='Search fullname'
                     value={
                         (table.getColumn('fullname')?.getFilterValue() as string) ?? ''
                     }
@@ -26,17 +26,17 @@ export function DataTableToolbar<TData>({
                     }
                     className='h-8 w-[150px] lg:w-[250px]'
                 />
-                <div className='flex gap-x-2'>
+                {/* <div className='flex gap-x-2'>
                     {table.getColumn('roles') && (
                         <DataTableFacetedFilter
                             column={table.getColumn('roles')}
                             title='Roles'
                             options={[
                                 { value: 'admin', label: 'Admin' },
-                            ]}
+                            ]}  
                         />
                     )}
-                </div>
+                </div> */}
                 {isFiltered && (
                     <Button
                         variant='ghost'

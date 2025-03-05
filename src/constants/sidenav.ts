@@ -20,7 +20,7 @@ export interface SideNav {
 export const coreSideNav: SideNav[] = [
     {
         title: "Dashboard",
-        url: "/dashboard",
+        url: "#",
         icon: PieChart,
         isActive: true,
         items: [
@@ -108,18 +108,8 @@ export const staffSideNav: SideNav[] = [
 export const orderSideNav: SideNav[] = [
     {
         title: "Orders",
-        url: "#",
+        url: "/dashboard/orders/list",
         icon: ListStart,
-        isActive: true,
-        items: [
-            {
-                title: "List",
-                url: "/dashboard/orders/list",
-            },
-            {
-                title: "History",
-                url: "/dashboard/orders/history",
-            },
-        ],
+        isActive: false
     },
 ]

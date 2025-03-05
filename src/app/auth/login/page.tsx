@@ -46,7 +46,7 @@ export default function Page() {
   });
 
   if (user) {
-    redirect('/dashboard');
+    redirect('/dashboard/overview');
   }
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {

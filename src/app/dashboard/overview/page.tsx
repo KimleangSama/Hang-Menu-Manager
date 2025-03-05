@@ -1,9 +1,31 @@
 "use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useStoreResponse } from '@/hooks/use-store';
+import { dashboardService } from '@/services/dashboard-service';
+import { OverviewResponse } from '@/types/overview-response';
 import { IconCash } from '@tabler/icons-react';
 import { DollarSignIcon, ListOrderedIcon, MenuIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function Overview() {
+    const store = useStoreResponse(state => state.store);
+    const [overview, setOverview] = useState<OverviewResponse | null>(null);
+
+    useEffect(() => {
+        async function fetchData() {
+            if (store && store.id) {
+                const response = await dashboardService.getDashboardOverview(store?.id);
+                if (response.success) {
+                    setOverview(response.payload);
+                }
+            }
+        }
+        fetchData();
+    }, [store]);
+
+    if (!overview) return null;
+
     return (
         <div className='max-w-full flex xl:flex-nowrap flex-wrap'>
             <div className="p-4 w-full space-y-6">
@@ -20,10 +42,10 @@ export default function Overview() {
                         </CardHeader>
                         <CardContent>
                             <div className='text-2xl font-bold'>
-                                12,345
+                                {overview.totalMenus}
                             </div>
                             <p className='text-xs text-muted-foreground'>
-                                +201 since last hour
+                                +{overview.totalMenus - overview.totalMenuLastWeek} since last week
                             </p>
                         </CardContent>
                     </Card>
@@ -35,9 +57,11 @@ export default function Overview() {
                             <ListOrderedIcon className='h-6 w-6 text-muted-foreground' />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>+2350</div>
+                            <div className='text-2xl font-bold'>
+                                {overview.totalOrders}
+                            </div>
                             <p className='text-xs text-muted-foreground'>
-                                +201 since last hour
+                                +{overview.totalOrders - overview.totalOrderLastWeek} since last week
                             </p>
                         </CardContent>
                     </Card>
@@ -49,9 +73,11 @@ export default function Overview() {
                             <DollarSignIcon className='h-6 w-6 text-muted-foreground' />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>+12,234</div>
+                            <div className='text-2xl font-bold'>
+                                {overview.totalRevenueUsd ?? 0}
+                            </div>
                             <p className='text-xs text-muted-foreground'>
-                                +201 since last hour
+                                +{overview.totalRevenueUsd - overview.totalRevenueUsdLastWeek} since last week
                             </p>
                         </CardContent>
                     </Card>
@@ -63,9 +89,11 @@ export default function Overview() {
                             <IconCash className='h-6 w-6 text-muted-foreground' />
                         </CardHeader>
                         <CardContent>
-                            <div className='text-2xl font-bold'>+573</div>
+                            <div className='text-2xl font-bold'>
+                                {overview.totalRevenueRiel ?? 0}
+                            </div>
                             <p className='text-xs text-muted-foreground'>
-                                +201 since last hour
+                                +{overview.totalRevenueRiel - overview.totalRevenueRielLastWeek} since last week
                             </p>
                         </CardContent>
                     </Card>

@@ -6,4 +6,5 @@ export interface CategoryResponse {
     available: boolean
     hidden: boolean
     position: number
+    menuCount: number
 }

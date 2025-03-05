@@ -44,6 +44,7 @@ export const staffColumns: ColumnDef<UserResponse>[] = [
         ),
         cell: ({ row }) => {
             const { roles } = row.original
+            if (!roles || roles.length === 0) return null
             return (
                 <div className='w-fit'>
                     {roles?.map((role) => (

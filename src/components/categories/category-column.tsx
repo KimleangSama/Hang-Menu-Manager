@@ -16,7 +16,7 @@ export const categoryColumns: ColumnDef<CategoryResponse>[] = [
         ),
         cell: ({ row }) => <RowDragHandleCell rowId={row.original.id} />,
         enableSorting: false,
-        size: 12
+        size: 100
     },
     {
         accessorKey: 'icon',
@@ -68,26 +68,44 @@ export const categoryColumns: ColumnDef<CategoryResponse>[] = [
         enableSorting: false,
     },
     {
+        accessorKey: 'menuCount',
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title='Number of Menus' />
+        ),
+        cell: ({ row }) => <p>{row.getValue('menuCount')}</p>,
+        enableSorting: true,
+    },
+    {
         accessorKey: 'hidden',
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title='Visiblity' />
         ),
-        cell: ({ row }) => (
-            <Badge variant={row.getValue('hidden') ? 'outline' : 'default'}>
-                {row.getValue('hidden') ? 'Hid' : 'Visible'}
-            </Badge>
-        ),
+        cell: ({ row }) => {
+            const menuCount: number = row.getValue("menuCount");
+            const hidden = row.getValue("hidden");
+
+            return (
+                <Badge variant={"default"}>
+                    {menuCount > 0 ? (hidden ? "Invisible" : "Visible") : "No Menu"}
+                </Badge>
+            );
+        },
     },
     {
-        accessorKey: 'available',
+        accessorKey: "available",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title='Available' />
+            <DataTableColumnHeader column={column} title="Available" />
         ),
-        cell: ({ row }) => (
-            <Badge variant={row.getValue('available') ? 'default' : 'destructive'}>
-                {row.getValue('available') ? 'Yes' : 'No'}
-            </Badge>
-        ),
+        cell: ({ row }) => {
+            const menuCount: number = row.getValue("menuCount");
+            const available = row.getValue("available");
+
+            return (
+                <Badge variant={"default"}>
+                    {menuCount > 0 ? (available ? "Available" : "Unavailable") : "No Menu"}
+                </Badge>
+            );
+        },
     },
     {
         id: 'actions',
