@@ -1,5 +1,5 @@
 "use client";;
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ import { fileService } from '@/services/file-service';
 const CreateMenuPage = () => {
     const store = useStoreResponse(state => state.store);
     const [file, setFile] = useState<File | null>(null);
+    const [reset, setReset] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const [images, setImages] = useState<FileFormat[]>([]);
     const [categories, setCategories] = useState<CategoryResponse[]>([]);
@@ -55,45 +56,29 @@ const CreateMenuPage = () => {
     })
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     const onSubmit = async (data: CreateMenuFormData) => {
+        setIsSubmitting(true);
         try {
-            setIsSubmitting(true);
-            setMessage(null);
-
-            if (!file) {
-                throw new Error("Image is required");
-            }
-
-            // Create menu
-            const response = await menuService.createMenu(data);
-            if (response.statusCode === 409) {
-                throw new Error("Menu code already exists.");
-            } else if (!response.success) {
-                throw new Error(response.error);
-            }
-
-            setMessage({ type: "success", text: "Menu created successfully!" });
-            toast.success("Menu created successfully!");
-
-            const imageFD = new FormData();
-            imageFD.append("file", file, file.name);
-            const uploadResponse = await fileService.uploadFile(response.payload.id, 'menu', imageFD);
-            if (!uploadResponse.success) throw new Error(uploadResponse.error);
-
+            if (!file) throw new Error("Image is required");
+            const menuResponse = await menuService.createMenu(data);
+            if (menuResponse.statusCode === 409) throw new Error("Menu code already exists.");
+            if (!menuResponse.success) throw new Error(menuResponse.error);
+            const imageFormData = new FormData();
+            imageFormData.append("file", file, file.name);
+            const imageUploadResponse = await fileService.uploadFile(menuResponse.payload.id, 'menu', imageFormData);
+            if (!imageUploadResponse.success) throw new Error(imageUploadResponse.error);
             if (files.length > 0) {
-                const slideImagesFD = new FormData();
-                for (const file of files) {
-                    slideImagesFD.append("files", file, file.name);
-                }
-                const uploadImagesResponse = await fileService.uploadFiles(response.payload.id, 'menu', slideImagesFD);
-                if (!uploadImagesResponse.success) throw new Error(uploadImagesResponse.error);
+                const slideImagesFormData = new FormData();
+                files.forEach(f => slideImagesFormData.append("files", f, f.name));
+                const slideUploadResponse = await fileService.uploadFiles(menuResponse.payload.id, 'menu', slideImagesFormData);
+                if (!slideUploadResponse.success) throw new Error(slideUploadResponse.error);
             }
-        }
-        /* eslint-disable  @typescript-eslint/no-explicit-any */
-        catch (error: any) {
-            setMessage({ type: "error", text: error.message || "An error occurred." });
+            toast.success("Menu created successfully!");
+            resetForm();
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.message);
         } finally {
             setIsSubmitting(false);
         }
@@ -110,21 +95,31 @@ const CreateMenuPage = () => {
         setImages(updatedList);
     }
 
+    const resetForm = () => {
+        form.reset();
+        form.setValue('storeId', store?.id || '');
+        setFile(null);
+        setFiles([]);
+        setImages([]);
+        setReset(!reset);
+    };
+
     useEffect(() => {
-        async function listCategories() {
-            if (store && store.id) {
+        const fetchCategories = async () => {
+            if (store?.id) {
                 form.setValue("storeId", store.id);
-                const response = await categoryService.listCategories(store?.id);
-                if (response.success) {
-                    setCategories(response.payload);
-                } else {
-                    toast.error(response.error);
-                    setMessage({ type: "error", text: response.error || '' });
+                try {
+                    const response = await categoryService.listCategories(store.id);
+                    if (response.success) setCategories(response.payload);
+                    else toast.error(response.error);
+                } catch (error) {
+                    console.error("Error fetching categories:", error);
+                    toast.error("Failed to load categories.");
                 }
             }
-        }
-        listCategories();
-    }, [store]);
+        };
+        fetchCategories();
+    }, [store, form]);
 
     return (
         <>
@@ -135,6 +130,7 @@ const CreateMenuPage = () => {
                             <div className="sticky top-1 z-10 flex justify-between items-center">
                                 <h1 className="text-3xl font-bold">Create Menu</h1>
                                 <div className='flex items-center gap-4'>
+                                    <Button type="button" onClick={() => resetForm()} disabled={isSubmitting}>Reset</Button>
                                     <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating..." : "Create"}</Button>
                                 </div>
                             </div>
@@ -145,7 +141,6 @@ const CreateMenuPage = () => {
                                             <AlertDescription>{error.message}</AlertDescription>
                                         </Alert>
                                     ))}
-                                {message && <Alert className={`mb-2 ${message.type === 'error' ? 'border-red-400' : 'text-green-400 border-green-400'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
                                 <div className='grid grid-cols-2 gap-4'>
                                     <div className='space-y-2'>
                                         <ImageUpload
@@ -153,8 +148,7 @@ const CreateMenuPage = () => {
                                             onUpload={(file) => {
                                                 setFile(file);
                                             }}
-                                            displayRemote={false}
-                                            previewUrl={file ? URL.createObjectURL(file) : undefined}
+                                            reset={reset}
                                         />
                                     </div>
 

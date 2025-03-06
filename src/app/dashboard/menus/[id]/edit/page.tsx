@@ -54,6 +54,7 @@ const EditPage = () => {
         resolver: zodResolver(editMenuSchema),
     })
     const [file, setFile] = useState<File | null>(null);
+    const [reset, setReset] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const [images, setImages] = useState<FileFormat[]>([]);
     const [categories, setCategories] = useState<CategoryResponse[]>([]);
@@ -179,7 +180,7 @@ const EditPage = () => {
                                         onUpload={(file) => {
                                             setFile(file);
                                         }}
-                                        displayRemote={true}
+                                        reset={reset}
                                         previewUrl={file ? URL.createObjectURL(file) : undefined}
                                     />
                                     {/* <img src={file ? URL.createObjectURL(file) : undefined} alt="menu" onError={(e) => { e.currentTarget.src = "https://placehold.co/600x400" }} className="px-4 w-full h-[200px] object-cover" /> */}

@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
-import DashboardPage from '../../../layout';
 import { toast } from 'sonner';
 
 import { useParams } from 'next/navigation';
 import { OrderResponse } from '@/types/order-response';
 import { orderService } from '@/services/order-service';
-import { getCurrencyLabel, getNAIfNull, getStatusLabel } from '@/lib/utils';
+import { getCurrencyLabel, getNAIfNull } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { handleStatusChange } from '@/components/orders/order-column';
 
 const ViewPage = () => {
     const params = useParams<{ id: string }>();
@@ -56,7 +57,27 @@ const ViewPage = () => {
                             <p className="font-medium text-lg">User Instructions: {getNAIfNull(orderResponse?.specialInstructions)}</p>
                         </div>
                         <div>
-                            <p className="font-medium text-lg">Status: {getStatusLabel(orderResponse?.status)}</p>
+                            <div className="font-medium text-lg flex items-center gap-2">
+                                Status:
+                                <Select
+                                    defaultValue={orderResponse?.status}
+                                    onValueChange={(value) => {
+                                        handleStatusChange(orderResponse?.id, value);
+                                    }}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="pending">Pending</SelectItem>
+                                        <SelectItem value="preparing">Preparing</SelectItem>
+                                        <SelectItem value="completed">Completed</SelectItem>
+                                        <SelectItem value="ready">Ready</SelectItem>
+                                        <SelectItem value="delivered">Delivered</SelectItem>
+                                        <SelectItem value="canceled">Canceled</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                         <div>
                             <p className="font-medium text-lg">Total in Dollar: {getNAIfNull("$" + orderResponse?.totalAmountInDollar)}</p>

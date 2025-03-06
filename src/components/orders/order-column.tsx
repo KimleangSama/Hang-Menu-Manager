@@ -4,15 +4,35 @@ import { DataTableColumnHeader } from '@/components/shared/table/data-table-colu
 import LongText from '@/components/shared/text/long-text'
 import { OrderListResponse } from '@/types/order-response'
 import { DataTableRowActions } from './order-row-action'
-import { getStatusLabel } from '@/lib/utils'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { orderService } from '@/services/order-service'
+import { toast } from 'sonner'
+
+export const handleStatusChange = async (id: string | undefined, status: string) => {
+    try {
+        const res = await orderService.updateOrderStatus(id, status);
+        if (!res.success) {
+            toast.error(res.error);
+        } else {
+            toast.success('Order status updated successfully');
+        }
+    } catch (error) {
+        toast.error('Failed to update order status');
+        console.error(String(error));
+    }
+};
 
 export const orderColumns: ColumnDef<OrderListResponse>[] = [
     {
-        accessorKey: 'code',
+        accessorKey: "code",
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title='Code' />
+            <DataTableColumnHeader column={column} title="Code" />
         ),
-        cell: ({ row }) => <div className='w-fit text-nowrap'>{row.getValue('code')}</div>,
+        cell: ({ row }) => {
+            const { code } = row.original;
+            const truncatedCode = code?.length > 16 ? `${code.slice(0, 12)}....` : code;
+            return <p className="w-32 truncate">{truncatedCode}</p>;
+        },
     },
     {
         accessorKey: 'phoneNumber',
@@ -77,9 +97,24 @@ export const orderColumns: ColumnDef<OrderListResponse>[] = [
             <DataTableColumnHeader column={column} title='Status' />
         ),
         cell: ({ row }) => (
-            <Badge variant={row.getValue('status') ? 'default' : 'destructive'}>
-                {getStatusLabel(row.getValue('status'))}
-            </Badge>
+            <Select
+                defaultValue={row.getValue('status')}
+                onValueChange={(value) => {
+                    handleStatusChange(row.original.id, value);
+                }}
+            >
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="preparing">Preparing</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="ready">Ready</SelectItem>
+                    <SelectItem value="delivered">Delivered</SelectItem>
+                    <SelectItem value="canceled">Canceled</SelectItem>
+                </SelectContent>
+            </Select>
         ),
     },
     {

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -17,8 +17,8 @@ import { toast } from "sonner";
 export interface ImageUploadProps {
     title: string;
     onUpload: (file: File) => void;
-    displayRemote?: boolean
     previewUrl?: string;
+    reset: boolean;
 }
 
 function centerAspectCrop(
@@ -41,7 +41,7 @@ function centerAspectCrop(
     )
 }
 
-export default function ImageUpload({ title, onUpload, displayRemote, previewUrl }: ImageUploadProps) {
+export default function ImageUpload({ title, onUpload, previewUrl, reset }: ImageUploadProps) {
     const imgRef = useRef<HTMLImageElement>(null)
     const previewCanvasRef = useRef<HTMLCanvasElement>(null)
     const [isCropped, setIsCropped] = useState(false)
@@ -92,6 +92,20 @@ export default function ImageUpload({ title, onUpload, displayRemote, previewUrl
         [completedCrop, scale],
     )
 
+    useEffect(() => {
+        if (reset) {
+            setImagePreview(previewUrl || null);
+            setIsCropped(false);
+            setCrop(undefined);
+            setCompletedCrop(undefined);
+            if (previewCanvasRef.current) {
+                const ctx = previewCanvasRef.current.getContext('2d');
+                if (ctx) {
+                    ctx.clearRect(0, 0, previewCanvasRef.current.width, previewCanvasRef.current.height);
+                }
+            }
+        }
+    }, [reset, previewUrl]);
 
     return (
         <Card className="w-full">
@@ -134,7 +148,7 @@ export default function ImageUpload({ title, onUpload, displayRemote, previewUrl
                         }}
                     />
                 </div>
-                <div className={`${displayRemote && !imagePreview && !isCropped ? 'mt-4' : 'hidden'}`}>
+                <div className={`${previewCanvasRef && !imagePreview && !isCropped ? 'mt-4' : 'hidden'}`}>
                     <img
                         src={previewUrl}
                         alt="Preview"

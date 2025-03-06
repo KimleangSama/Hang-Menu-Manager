@@ -21,6 +21,18 @@ class OrderService extends APIService {
             throw error
         }
     }
+    async updateOrderStatus(id: string | undefined, status: string): Promise<BaseResponse<OrderResponse>> {
+        try {
+            if (id) {
+                const response = await this.patch<BaseResponse<OrderResponse>, string>(`/orders/${id}/update?status=${status}`, '');
+                return response;
+            }
+            throw new Error('Order ID is required')
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
 }
 
 export const orderService = new OrderService();
