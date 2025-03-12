@@ -14,6 +14,16 @@ class StoreService extends APIService {
         }
     }
 
+    async updateStoreLayout(slug: string, layout: string) {
+        try {
+            const response = await this.patch<BaseResponse<StoreResponse>, Object>(`/stores/${slug}/layout?layout=${layout}`, {});
+            return response;
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+
     async getStoreOfUser(): Promise<BaseResponse<StoreResponse>> {
         try {
             const response = await this.get<BaseResponse<StoreResponse>>(`/stores/mine`);

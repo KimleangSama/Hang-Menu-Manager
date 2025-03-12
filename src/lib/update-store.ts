@@ -4,7 +4,7 @@ import { StoreResponse } from "../types/store-response";
 import { uuidv4 } from "./utils";
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-export const resetUpdateStoreForm = (form: any, response: BaseResponse<StoreResponse>) => {
+export const parseStoreInfoResponse = (form: any, response: BaseResponse<StoreResponse>) => {
     const sanitizedData = {
         id: response.payload.id || "",
         name: response.payload.name || "",

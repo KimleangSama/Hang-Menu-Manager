@@ -19,6 +19,7 @@ export interface ImageUploadProps {
     onUpload: (file: File) => void;
     previewUrl?: string;
     reset: boolean;
+    aspect?: number;
 }
 
 function centerAspectCrop(
@@ -30,7 +31,7 @@ function centerAspectCrop(
         makeAspectCrop(
             {
                 unit: '%',
-                width: 90,
+                width: 100,
             },
             aspect,
             mediaWidth,
@@ -41,14 +42,13 @@ function centerAspectCrop(
     )
 }
 
-export default function ImageUpload({ title, onUpload, previewUrl, reset }: ImageUploadProps) {
+export default function ImageUpload({ title, onUpload, previewUrl, aspect = 4 / 3, reset }: ImageUploadProps) {
     const imgRef = useRef<HTMLImageElement>(null)
     const previewCanvasRef = useRef<HTMLCanvasElement>(null)
     const [isCropped, setIsCropped] = useState(false)
     const [crop, setCrop] = useState<Crop>()
     const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
     const [scale,] = useState(1)
-    const [aspect,] = useState<number | undefined>(4 / 3)
     const [imagePreview, setImagePreview] = useState<string | null>(previewUrl || null);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,9 +151,7 @@ export default function ImageUpload({ title, onUpload, previewUrl, reset }: Imag
                 <div className={`${previewCanvasRef && !imagePreview && !isCropped ? 'mt-4' : 'hidden'}`}>
                     <img
                         src={previewUrl}
-                        alt="Preview"
                         style={{
-                            border: '1px solid black',
                             objectFit: 'contain',
                             width: '100%',
                         }}

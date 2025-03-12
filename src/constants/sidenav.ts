@@ -41,8 +41,20 @@ export const coreSideNav: SideNav[] = [
                 url: "/dashboard/stores/info",
             },
             {
-                title: "Update",
-                url: "/dashboard/stores/update",
+                title: "Edit",
+                url: "/dashboard/stores/edit",
+            },
+            {
+                title: "Layout",
+                url: "/dashboard/stores/layout",
+            },
+            {
+                title: "Banner",
+                url: "/dashboard/stores/banner",
+            },
+            {
+                title: "Promotion",
+                url: "/dashboard/stores/promotion",
             },
         ],
     },

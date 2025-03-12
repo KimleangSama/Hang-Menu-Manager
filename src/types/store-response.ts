@@ -4,6 +4,9 @@ export interface StoreResponse {
     name: string
     logo: string
     color: string
+    layout: string
+    promotion: string
+    banner: string
     description: string
     physicalAddress: string
     virtualAddress: string

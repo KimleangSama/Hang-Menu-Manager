@@ -19,12 +19,13 @@ import {
 import { Clock, CreditCard, Plus, Minus, Save, Loader2, DollarSign } from "lucide-react";
 import { UpdateStoreFormValues, UpdateStoreRequest } from "../../../../types/request/update-store-request";
 import { toast } from "sonner";
-import { mapUpdateStoreFormValues, resetUpdateStoreForm } from "@/lib/update-store";
+import { mapUpdateStoreFormValues, parseStoreInfoResponse } from "@/lib/update-store";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ImageUpload from "@/components/shared/form/image/image-upload";
 import { fileService } from "@/services/file-service";
+import { API_IMAGE_URL } from "@/constants/auth";
 
-export default function StoreUpdatePage() {
+export default function StoreEditPage() {
     const [responseError, setResponseError] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -56,7 +57,18 @@ export default function StoreUpdatePage() {
             try {
                 const response = await storeService.getStoreOfUser();
                 if (response.success) {
-                    resetUpdateStoreForm(form, response);
+                    parseStoreInfoResponse(form, response);
+                    const logo = response.payload.logo
+                    if (logo) {
+                        try {
+                            const res = await fetch(API_IMAGE_URL + logo);
+                            const blob = await res.blob();
+                            setFile(new File([blob], logo, { type: 'image/jpeg' }));
+                        } catch (error) {
+                            console.error('Failed to fetch logo: ', error);
+                            toast.error('Failed to fetch logo: ' + error);
+                        }
+                    }
                 } else {
                     console.error('Failed to fetch store info: ', response.error);
                     toast.error('Failed to fetch store info: ' + response.error);
@@ -80,7 +92,7 @@ export default function StoreUpdatePage() {
                 formData.append('file', file);
                 const response = await fileService.updateFile(formData);
                 if (response.success) {
-                    data.logo = response.payload.url;
+                    data.logo = response.payload.name;
                 } else {
                     console.error('Failed to upload logo: ', response.error);
                     toast.error('Failed to upload logo: ' + response.error);
@@ -171,7 +183,7 @@ export default function StoreUpdatePage() {
         <>
             <div className={`max-w-4xl mx-auto p-4 space-y-6`}>
                 <div className="flex justify-between items-center sticky top-2 z-10 backdrop-blur-sm">
-                    <h1 className="text-3xl font-bold">Update Store Info</h1>
+                    <h1 className="text-3xl font-bold">Edit Store Info</h1>
                     <Button
                         type="submit"
                         form="store-form"
@@ -252,6 +264,7 @@ export default function StoreUpdatePage() {
                                                                         onUpload={(file) => {
                                                                             setFile(file);
                                                                         }}
+                                                                        reset={false}
                                                                         previewUrl={file ? URL.createObjectURL(file) : undefined}
                                                                     />
                                                                 </div>
@@ -263,6 +276,8 @@ export default function StoreUpdatePage() {
                                             </FormItem>
                                         )}
                                     />
+
+                                    <img src={file ? URL.createObjectURL(file) : undefined} alt="logo" className="w-24 h-24 object-cover" />
 
                                     <FormField
                                         control={form.control}
