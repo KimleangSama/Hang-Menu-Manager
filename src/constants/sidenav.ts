@@ -112,7 +112,7 @@ export const staffSideNav: SideNav[] = [
     },
     {
         title: "Feedback",
-        url: "/dashboard/tables",
+        url: "/dashboard/feedbacks",
         icon: MessageSquareDot,
     },
 ]

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DashboardPage from "../../layout";
 import TableListContextProvider, { TableListDialogType } from "@/providers/table-list-provider";
 import useDialogState from "@/hooks/use-dialog";
 import { toast } from "sonner";
