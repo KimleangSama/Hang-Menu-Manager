@@ -99,7 +99,6 @@ export const categoryColumns: ColumnDef<CategoryResponse>[] = [
         cell: ({ row }) => {
             const menuCount: number = row.getValue("menuCount");
             const available = row.getValue("available");
-
             return (
                 <Badge variant={"default"}>
                     {menuCount > 0 ? (available ? "Available" : "Unavailable") : "No Menu"}

@@ -1,4 +1,5 @@
-"use client";;
+"use client";
+
 import { useEffect, useState } from "react";
 import TableListContextProvider, { TableListDialogType } from "@/providers/table-list-provider";
 import useDialogState from "@/hooks/use-dialog";
@@ -45,18 +46,6 @@ export default function ListCategoryPage() {
             <TableListContextProvider value={{ open, setOpen, currentRow, setCurrentRow }}>
                 <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
                     <DataTable data={categories} setData={setCategories} columns={categoryColumns} />
-                    {/* {(open === 'delete' || open === 'edit') && (
-                                <EditDeleteAlertDialog
-                                    open={open}
-                                    setOpen={setOpen}
-                                    onEdit={() => {
-                                        console.log('first edit')
-                                    }}
-                                    onDelete={() => {
-                                        console.log('first' + 'delete')
-                                    }}
-                                />
-                            )} */}
                 </div>
             </TableListContextProvider>
         </div>

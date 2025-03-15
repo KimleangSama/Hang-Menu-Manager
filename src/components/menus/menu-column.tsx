@@ -1,7 +1,7 @@
+"use client";;
 import { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/shared/table/data-table-column-header'
-import LongText from '@/components/shared/text/long-text'
 import { API_IMAGE_URL } from '@/constants/auth'
 import { MenuResponse } from '../../types/menu-response'
 import { DataTableRowActions } from './menu-row-action'
@@ -9,8 +9,22 @@ import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
 import Image from 'next/image'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { SheetTitle } from '../ui/sheet'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { CategoryResponse } from '@/types/category-response';
+import { menuService } from '@/services/menu-service';
 
-export const menuColumns: ColumnDef<MenuResponse>[] = [
+const handleCategoryChange = async (menuId: string | undefined, categoryId: string) => {
+    try {
+        const res = await menuService.updateMenuCategory(menuId, categoryId);
+        if (res.success) {
+            console.log('Category updated successfully');
+        }
+    } catch (error) {
+        console.error('Failed to update category:', error);
+    }
+}
+
+export const menuColumns = (categories: CategoryResponse[]): ColumnDef<MenuResponse>[] => [
     {
         accessorKey: 'image',
         header: ({ column }) => (
@@ -77,7 +91,7 @@ export const menuColumns: ColumnDef<MenuResponse>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title='Description' />
         ),
-        cell: ({ row }) => <LongText>{row.getValue('description')}</LongText>,
+        cell: ({ row }) => <div className='w-fit text-wrap'>{row.getValue('description')}</div>,
         enableSorting: false,
     },
     {
@@ -119,18 +133,43 @@ export const menuColumns: ColumnDef<MenuResponse>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title='Category' />
         ),
-        cell: ({ row }) => <div>{row.getValue('categoryName')}</div>,
+        cell: ({ row }) => {
+            const { categoryId } = row.original;
+            return (
+                <Select
+                    defaultValue={categoryId}
+                    onValueChange={(value) => {
+                        console.log('Selected category:', value);
+                        handleCategoryChange(row.original.id, value);
+                    }}
+                >
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                                {category.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            );
+        },
     },
     {
-        accessorKey: 'available',
+        accessorKey: 'Visible',
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title='Available' />
+            <DataTableColumnHeader column={column} title='Visible' />
         ),
-        cell: ({ row }) => (
-            <Badge variant={row.getValue('available') ? 'default' : 'destructive'}>
-                {row.getValue('available') ? 'Yes' : 'No'}
-            </Badge>
-        ),
+        cell: ({ row }) => {
+            const { hidden } = row.original;
+            return (
+                <Badge color={hidden ? 'red' : 'green'}>
+                    {hidden ? 'Hidden' : 'Visible'}
+                </Badge>
+            )
+        },
     },
     {
         id: 'actions',

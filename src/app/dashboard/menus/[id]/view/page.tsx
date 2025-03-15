@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { useParams } from 'next/navigation';
 import { MenuResponse } from '../../../../../types/menu-response';
-import { API_BASE_URL, API_IMAGE_URL } from '@/constants/auth';
+import { API_IMAGE_URL } from '@/constants/auth';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper/modules';
 import "swiper/css";
@@ -16,7 +16,6 @@ import { BADGES } from '@/constants/badges';
 import { getCurrencySign, getFullPrice } from '@/lib/helpers';
 import { useStoreResponse } from '@/hooks/use-store';
 import { FaFacebook, FaInstagram, FaTelegram } from 'react-icons/fa';
-
 
 const ViewPage = () => {
     const store = useStoreResponse(state => state.store);
@@ -58,7 +57,7 @@ const ViewPage = () => {
                         <p className="font-medium text-lg">Name:</p>
                         <p>{menuResponse.name}</p>
                     </div>
-                    <div>
+                    <div className='col-span-2'>
                         <p className="font-medium text-lg">Description:</p>
                         <p>{menuResponse.description}</p>
                     </div>
@@ -87,8 +86,8 @@ const ViewPage = () => {
                 </div>
             </div>
             <div className='col-span-2'>
-                <div className="relative mx-auto border-gray-800 dark:border-gray-800 bg-gray-800 border-[8px] rounded-t-xl h-[172px] max-w-[301px] md:h-[500px] md:max-w-[512px]">
-                    <div className="rounded-lg overflow-hidden h-[156px] md:h-[490px] bg-white dark:bg-gray-800 items-center w-full justify-center">
+                <div className="relative mx-auto border-gray-800 dark:border-gray-800 bg-gray-800 border-[8px] rounded-t-xl h-[172px] max-w-[301px] md:h-[540px] md:max-w-[512px]">
+                    <div className="rounded-lg overflow-hidden h-[156px] md:h-[530px] bg-white dark:bg-gray-800 items-center w-full justify-center">
                         <div>
                             <div className="absolute top-2 left-2 flex flex-wrap gap-y-1 items-center z-[9999]">
                                 {menuResponse?.badges?.map((badge, index) => (
@@ -123,7 +122,6 @@ const ViewPage = () => {
                                 </Swiper>
                             </div>
                             <div className="px-4 py-2">
-                                ddk
                                 {menuResponse.code && <h6 className="text-xs text-gray-500">Code: {menuResponse.code}</h6>}
                                 <h3 className="font-semibold">{menuResponse.name}</h3>
                                 <article className='text-pretty overflow-auto'>

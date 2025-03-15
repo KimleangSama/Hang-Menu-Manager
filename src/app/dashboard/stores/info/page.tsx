@@ -7,6 +7,7 @@ import { IoLogoFacebook, IoLogoInstagram } from "react-icons/io";
 import { FaTelegramPlane } from "react-icons/fa";
 import { Language, OperatingHour, OrderOption, PaymentMethod } from "../../../../types/store-response";
 import { useStoreResponse } from "@/hooks/use-store";
+import { API_IMAGE_URL } from "@/constants/auth";
 
 export default function StoreInfoPage() {
     const store = useStoreResponse((state) => state.store);
@@ -51,7 +52,7 @@ export default function StoreInfoPage() {
                         </div>
                         {logo && (
                             <img
-                                src={logo}
+                                src={API_IMAGE_URL + logo}
                                 alt="Store logo"
                                 className="w-16 h-16 rounded-lg object-cover"
                                 onError={(e) => e.currentTarget.src = 'https://placehold.co/400x400'}

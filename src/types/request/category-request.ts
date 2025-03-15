@@ -18,5 +18,6 @@ export interface CategoryReorderRequest {
 
 export interface CategoryPositionUpdate {
     id: string;
+    name: string;
     position: number;
 }

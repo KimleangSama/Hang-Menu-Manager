@@ -33,7 +33,8 @@ export function NavBreadcrumbs() {
                             {index !== items.length - 1 && (
                                 <BreadcrumbItem>
                                     <BreadcrumbLink asChild={true}>
-                                        <Link href={item?.link}>{item?.title}</Link>
+                                        {/* <Link href={item?.link}>{item?.title}</Link> */}
+                                        <p>{item?.title}</p>
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                             )}

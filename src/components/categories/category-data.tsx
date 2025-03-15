@@ -28,11 +28,9 @@ import { ScrollAreaScrollbar } from '@radix-ui/react-scroll-area'
 import { DataTableToolbar } from './category-toolbar'
 import { closestCenter, DndContext, DragEndEvent, KeyboardSensor, MouseSensor, TouchSensor, UniqueIdentifier, useSensor, useSensors } from '@dnd-kit/core'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
-import { toast } from 'sonner'
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CategoryResponse } from '@/types/category-response'
 import { DraggableRow } from './category-dnd'
-import { random } from 'lodash'
 import { categoryService } from '@/services/category-service'
 import { useStoreResponse } from '@/hooks/use-store'
 import { CategoryPositionUpdate } from '@/types/request/category-request'
@@ -109,9 +107,7 @@ export function DataTable({ columns, data, setData }: any) {
     function extractChangedItems(newData: CategoryResponse[]) {
         const changedItems: CategoryPositionUpdate[] = [];
         newData.forEach((item, index) => {
-            if (item.position !== index) { // Compare positions
-                changedItems.push({ id: item.id, position: index });
-            }
+            changedItems.push({ id: item.id, name: item.name, position: index });
         });
         return changedItems;
     }

@@ -38,7 +38,7 @@ export const useAuthStore = create<AuthState>()(
             login: async (username, password) => {
                 set({ isLoading: true })
                 try {
-                    const { data } = await axios.post(`${API_BASE_URL}/auth/login-backoffice`, { username, password })
+                    const { data } = await axios.post(`${API_BASE_URL}/auth/login`, { username, password })
                     if (data?.success) {
                         set({ accessToken: data.payload.accessToken, isAuthenticated: true, isLoading: false })
                         await get().fetchUserInfo(data.payload.accessToken)
@@ -57,7 +57,7 @@ export const useAuthStore = create<AuthState>()(
             signup: async (username, password, roles) => {
                 set({ isLoading: true })
                 try {
-                    const { data } = await axios.post(`${API_BASE_URL}/auth/register-backoffice`, {
+                    const { data } = await axios.post(`${API_BASE_URL}/auth/register`, {
                         username, password, roles
                     })
                     set({ isLoading: false })

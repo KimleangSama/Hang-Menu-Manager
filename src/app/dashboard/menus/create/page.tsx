@@ -137,7 +137,7 @@ const CreateMenuPage = () => {
                             <Card className="p-6">
                                 {form.formState.errors &&
                                     Object.entries(form.formState.errors).map(([key, error]) => (
-                                        <Alert key={key} className="mb-2 border-red-400" variant="destructive">
+                                        <Alert key={key} className="mb-2 border-red-400 text-red-500">
                                             <AlertDescription>{error.message}</AlertDescription>
                                         </Alert>
                                     ))}
@@ -336,7 +336,7 @@ const CreateMenuPage = () => {
                                                 <FormItem>
                                                     <FormLabel>Description</FormLabel>
                                                     <FormControl>
-                                                        <Textarea maxLength={144} {...field} />
+                                                        <Textarea maxLength={250} {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

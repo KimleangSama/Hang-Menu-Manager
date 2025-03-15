@@ -18,6 +18,7 @@ import { API_IMAGE_URL } from "@/constants/auth";
 const PromotionPage = () => {
     const store = useStoreResponse(state => state.store);
     const [files, setFiles] = useState<File[]>([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (store?.promotion) {
@@ -35,6 +36,7 @@ const PromotionPage = () => {
     };
 
     const handleUploadPromotions = async () => {
+        setLoading(true);
         try {
             const fd = new FormData();
             files.forEach(file => {
@@ -47,6 +49,7 @@ const PromotionPage = () => {
             console.error(error);
             toast.error('Failed to upload promotion');
         }
+        setLoading(false)
     };
 
     return (
@@ -55,7 +58,9 @@ const PromotionPage = () => {
 
             <div>
                 <div className="flex items-center justify-between sticky top-0 bg-white dark:bg-black py-4">
-                    <Button disabled={files.length < 1} onClick={handleUploadPromotions}>Save</Button>
+                    <Button disabled={files.length < 1} onClick={handleUploadPromotions}>
+                        {loading ? 'Uploading...' : 'Upload'}
+                    </Button>
                 </div>
 
                 <div className="space-y-4 mt-4">
@@ -74,7 +79,7 @@ const PromotionPage = () => {
                                 <h3 className="text-md font-medium mb-2">Selected Files ({files.length})</h3>
                                 <ul className="space-y-2">
                                     {files.map((file, index) => (
-                                        <li key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                                        <li key={index} className="flex items-center justify-between border-gray-100 border p-2 rounded">
                                             <span className="truncate max-w-xs">{file.name}</span>
                                             <Button
                                                 variant="ghost"

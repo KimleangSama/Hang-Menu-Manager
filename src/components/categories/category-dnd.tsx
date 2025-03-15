@@ -13,14 +13,13 @@ const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
         id: rowId,
     })
     return (
-        // Alternatively, you could set these attributes on the rows themselves
         <button {...attributes} {...listeners} className='w-full flex items-center justify-center'>
             <ListEnd size={24} />
         </button>
     )
 }
 
-const DraggableRow = ({ index, row, virtualRow }
+const DraggableRow = ({ row, virtualRow }
     : {
         index: number,
         row: Row<CategoryResponse>,
@@ -37,7 +36,6 @@ const DraggableRow = ({ index, row, virtualRow }
         zIndex: isDragging ? 1 : 0,
         position: 'relative',
         height: `${virtualRow.size}px`,
-        // transform: `translateY(${virtualRow.start - index * virtualRow.size}px)`,
     }
     return (
         <TableRow

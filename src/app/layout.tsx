@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hang",
-  description: "Empowering businesses with cutting-edge SaaS solutions.",
+  title: "Hang Menu",
+  description: "Empowering businesses with a digital menu",
 };
 
 export default function RootLayout({

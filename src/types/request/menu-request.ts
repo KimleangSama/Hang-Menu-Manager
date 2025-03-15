@@ -28,13 +28,10 @@ export const editMenuSchema = z.object({
     discount: z.string().optional(),
     currency: z.string().optional(),
     image: z.string().optional(),
-    images: z.array(z.object({
-        name: z.string().optional(),
-        url: z.string().optional(),
-    })).optional(),
+    images: z.array(z.string()).optional(),
     categoryId: z.string().min(1, { message: "Category is required" }),
     badges: z.array(z.string()).optional(),
-    available: z.boolean(),
+    hidden: z.boolean(),
     storeId: z.string().min(1, { message: "Store is required" }),
 });
 

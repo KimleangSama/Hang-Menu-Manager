@@ -31,6 +31,7 @@ import { Pagination, Navigation } from 'swiper/modules';
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { fileService } from "@/services/file-service";
 
 
 const EditPage = () => {
@@ -48,29 +49,19 @@ const EditPage = () => {
             images: [],
             badges: [],
             categoryId: '',
-            available: true,
+            hidden: false,
             storeId: store?.id || '',
         },
         resolver: zodResolver(editMenuSchema),
     })
     const [file, setFile] = useState<File | null>(null);
-    const [reset, setReset] = useState(false);
+    const [fileChange, setFileChange] = useState(false);
+    const [reset] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const [images, setImages] = useState<FileFormat[]>([]);
     const [categories, setCategories] = useState<CategoryResponse[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-
-    const onSubmit = async (data: EditMenuFormData) => {
-        setIsSubmitting(true);
-        const res = await menuService.updateMenu(params.id, data);
-        if (res.success) {
-            setMessage({ type: "success", text: "Menu updated successfully" });
-        } else {
-            setMessage({ type: "error", text: res.error });
-        }
-        setIsSubmitting(false);
-    }
 
     function uploadImages(uploadedImages: File[], fileFormats: FileFormat[]) {
         setFiles([...files, ...uploadedImages]);
@@ -83,70 +74,142 @@ const EditPage = () => {
         setImages(updatedList);
     }
 
-    useEffect(() => {
-        async function getCategoryAndMenuInfo() {
-            if (store && store.id) {
-                const res = await categoryService.listCategories(store?.id);
+    const onSubmit = async (data: EditMenuFormData) => {
+        if (!store?.id) {
+            setMessage({ type: "error", text: "Store information is missing" });
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            let fileName = '';
+            let fileNames: string[] = [];
+
+            // Upload main image if changed
+            if (fileChange && file) {
+                const imageFormData = new FormData();
+                imageFormData.append("file", file, file.name);
+                const res = await fileService.uploadFile(params.id, 'menu', imageFormData);
                 if (res.success) {
-                    setCategories(res.payload);
-                    const response = await menuService.getMenuById(params.id);
-                    if (response.success) {
-                        const { code, name, description, price, discount, currency, badges, image, images, categoryId, available } = response.payload;
-                        form.setValue('code', code);
-                        form.setValue('name', name);
-                        form.setValue('description', description);
-                        form.setValue('price', String(price));
-                        form.setValue('discount', String(discount));
-                        form.setValue('currency', currency);
-                        form.setValue('image', image);
-                        form.setValue('images', images);
-                        form.setValue('badges', badges);
-                        form.setValue('categoryId', categoryId);
-                        form.setValue('available', available);
-                        form.setValue('storeId', store.id);
-                        if (image) {
-                            const response = await fetch(API_IMAGE_URL + image);
-                            if (!response.ok) {
-                                throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-                            }
-                            const blob = await response.blob();
-                            setFile(new File([blob], image, { type: 'image/jpeg' }));
-                        }
-                        if (images && images.length > 0) {
-                            const fileFormats = images.map(img => ({ name: img.name, photo: API_IMAGE_URL + img.name, type: 'image/jpeg', size: 0 }));
-                            const processFiles = async () => {
-                                const filePromises = fileFormats.map(async (fileFormat) => {
-                                    try {
-                                        const response = await fetch(fileFormat.photo);
-                                        if (!response.ok) {
-                                            throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-                                        }
-                                        const blob = await response.blob();
-                                        return new File([blob], fileFormat.name, { type: 'image/jpeg' });
-                                    } catch (error) {
-                                        console.error("Error fetching image:", error);
-                                        return null; // or handle the error in another way
-                                    }
-                                });
-                                const resolvedFiles = await Promise.all(filePromises);
-                                const validFiles = resolvedFiles.filter((file) => file !== null) as File[];
-                                setFiles(validFiles);
-                                setImages(fileFormats);
-                            };
-                            processFiles();
-                        }
-                    } else {
-                        toast.error(response.error);
-                        setMessage({ type: "error", text: response.error });
-                    }
-                } else {
-                    toast.error(res.error);
-                    setMessage({ type: "error", text: res.error });
+                    fileName = res.payload.name;
                 }
             }
+
+            // Upload slide images if any
+            if (files.length > 0) {
+                const slideImagesFormData = new FormData();
+                files.forEach(f => slideImagesFormData.append("files", f, f.name));
+                const res = await fileService.uploadFiles(params.id, 'menu', slideImagesFormData);
+                fileNames = res.payload.map(f => f.name);
+            }
+
+            // Prepare data for submission
+            const toSubmitData = {
+                ...data,
+                storeId: store.id,
+                image: fileChange ? fileName : data.image,
+                images: fileNames
+            };
+            // Update menu
+            const res = await menuService.updateMenu(params.id, toSubmitData);
+            if (res.success) {
+                setMessage({ type: "success", text: "Menu updated successfully" });
+                toast.success("Menu updated successfully");
+            } else {
+                setMessage({ type: "error", text: res.error });
+                toast.error(res.error);
+            }
+        } catch (error) {
+            console.error(error);
+            setMessage({ type: "error", text: "Failed to update menu" });
+            toast.error("Failed to update menu");
+        } finally {
+            setIsSubmitting(false);
         }
-        getCategoryAndMenuInfo();
-    }, [store, params.id])
+    };
+
+    // Fetch category and menu data
+    useEffect(() => {
+        async function fetchData() {
+            if (!store?.id) return;
+            try {
+                // Fetch categories
+                const categoriesRes = await categoryService.listCategories(store.id);
+                if (categoriesRes.success) {
+                    setCategories(categoriesRes.payload);
+                    // Fetch menu details
+                    const menuRes = await menuService.getMenuById(params.id);
+                    if (menuRes.success) {
+                        const { code, name, description, price, discount, currency, badges, image, images = [], categoryId } = menuRes.payload;
+                        form.reset({
+                            code,
+                            name,
+                            description,
+                            price: String(price),
+                            discount: String(discount),
+                            currency,
+                            image,
+                            badges: badges || [],
+                            categoryId,
+                            storeId: store.id,
+                            hidden: false,
+                            images: []
+                        });
+                        if (image) {
+                            try {
+                                const response = await fetch(API_IMAGE_URL + image);
+                                if (response.ok) {
+                                    const blob = await response.blob();
+                                    setFile(new File([blob], image, { type: 'image/jpeg' }));
+                                }
+                            } catch (error) {
+                                console.error("Error fetching main image:", error);
+                            }
+                        }
+                        if (images?.length > 0) {
+                            const fileFormats = images.map(img => ({
+                                name: img.name,
+                                photo: API_IMAGE_URL + img.name,
+                                type: 'image/jpeg',
+                                size: 0
+                            }));
+                            const fetchImages = async () => {
+                                const fetchedFiles = await Promise.all(
+                                    fileFormats.map(async (fileFormat) => {
+                                        try {
+                                            const response = await fetch(fileFormat.photo);
+                                            if (response.ok) {
+                                                const blob = await response.blob();
+                                                return new File([blob], fileFormat.name, { type: 'image/jpeg' });
+                                            }
+                                            return null;
+                                        } catch (error) {
+                                            console.error("Error fetching image:", error);
+                                            return null;
+                                        }
+                                    })
+                                );
+                                setFiles(fetchedFiles.filter((file): file is File => file !== null));
+                                setImages(fileFormats);
+                            };
+                            fetchImages();
+                        }
+                    } else {
+                        toast.error(menuRes.error);
+                        setMessage({ type: "error", text: menuRes.error });
+                    }
+                } else {
+                    toast.error(categoriesRes.error);
+                    setMessage({ type: "error", text: categoriesRes.error });
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                toast.error("Failed to load menu data");
+                setMessage({ type: "error", text: "Failed to load menu data" });
+            }
+        }
+        fetchData();
+    }, [store, params.id]);
 
     if (!store) {
         return (
@@ -179,11 +242,11 @@ const EditPage = () => {
                                         title='Upload Image'
                                         onUpload={(file) => {
                                             setFile(file);
+                                            setFileChange(true)
                                         }}
                                         reset={reset}
                                         previewUrl={file ? URL.createObjectURL(file) : undefined}
                                     />
-                                    {/* <img src={file ? URL.createObjectURL(file) : undefined} alt="menu" onError={(e) => { e.currentTarget.src = "https://placehold.co/600x400" }} className="px-4 w-full h-[200px] object-cover" /> */}
                                 </div>
 
                                 <div className='space-y-2'>

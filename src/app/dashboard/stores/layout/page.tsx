@@ -62,7 +62,7 @@ const LayoutPage = () => {
                 {layoutOptions.map((option) => (
                     <div
                         key={option.id}
-                        className={`border-2 rounded-xl overflow-hidden transition-all duration-200 hover:shadow-md ${selectedLayout === option.id ? 'ring-2 ring-offset-2' : ''}`}
+                        className={`bg-white border-2 rounded-xl overflow-hidden transition-all duration-200 hover:shadow-md ${selectedLayout === option.id ? 'ring-2 ring-offset-2' : ''}`}
                         style={{
                             borderColor: selectedLayout === option.id ? store.color : 'transparent',
                             outlineColor: store.color

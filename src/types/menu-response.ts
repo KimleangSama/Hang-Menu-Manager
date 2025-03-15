@@ -11,7 +11,6 @@ export interface MenuResponse {
     categoryId: string
     categoryName: string
     hidden: boolean
-    available: boolean
     favorite: boolean
     createdAt: string
     updatedAt: string

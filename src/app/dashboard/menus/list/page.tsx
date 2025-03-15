@@ -11,11 +11,14 @@ import { MenuResponse } from "../../../../types/menu-response";
 import { DataTable } from "@/components/menus/menu-data";
 import { useStoreResponse } from "@/hooks/use-store";
 import { DataTableSkeleton } from "@/components/shared/table/data-table-skeleton";
+import { CategoryResponse } from "@/types/category-response";
+import { categoryService } from "@/services/category-service";
 
 export default function ListMenuPage() {
     const store = useStoreResponse(state => state.store);
     const [loading, setLoading] = useState(true)
     const [menus, setMenus] = useState<MenuResponse[]>([]);
+    const [categories, setCategories] = useState<CategoryResponse[]>([]);
     const [currentRow, setCurrentRow] = useState<MenuResponse | null>(null)
     const [open, setOpen] = useDialogState<TableListDialogType>(null)
 
@@ -26,6 +29,12 @@ export default function ListMenuPage() {
                     const response = await menuService.listMenus(store.id, 0, 1000);
                     if (response.success) {
                         setMenus(response.payload);
+                        const res = await categoryService.listCategories(store.id);
+                        if (res.success) {
+                            setCategories(res.payload);
+                        } else {
+                            toast.error(res.error);
+                        }
                     } else {
                         toast.error(response.error);
                     }
@@ -50,7 +59,7 @@ export default function ListMenuPage() {
                 <TableListContextProvider value={{ open, setOpen, currentRow, setCurrentRow }}>
                     <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
                         {loading ? <DataTableSkeleton columnCount={7} rowCount={15} /> :
-                            <DataTable data={menus} columns={menuColumns} />
+                            <DataTable data={menus} columns={menuColumns(categories)} />
                         }
                     </div>
                 </TableListContextProvider>
