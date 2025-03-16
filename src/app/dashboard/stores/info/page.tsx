@@ -1,16 +1,21 @@
-"use client";
-
+"use client";;
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Phone, Mail, CreditCard, Store, Globe } from "lucide-react";
+import { Clock, MapPin, Phone, Mail, CreditCard, Store, Globe, MapPinIcon } from "lucide-react";
 import { IoLogoFacebook, IoLogoInstagram } from "react-icons/io";
 import { FaTelegramPlane } from "react-icons/fa";
 import { Language, OperatingHour, OrderOption, PaymentMethod } from "../../../../types/store-response";
 import { useStoreResponse } from "@/hooks/use-store";
 import { API_IMAGE_URL } from "@/constants/auth";
+import { GOOGLE_MAPS_API_KEY } from "@/constants/api";
+import { AdvancedMarker, APIProvider, ControlPosition, Map } from "@vis.gl/react-google-maps";
+import { CustomZoomControl } from "@/components/map-control";
+import { useState } from "react";
 
 export default function StoreInfoPage() {
     const store = useStoreResponse((state) => state.store);
+    const [zoom, setZoom] = useState(15);
+
 
     if (!store) {
         return (
@@ -36,6 +41,9 @@ export default function StoreInfoPage() {
         instagram,
         telegram,
         color,
+        lat,
+        lng,
+        showGoogleMap,
         storeInfoResponse
     } = store;
     const { operatingHours, orderOptions, paymentMethods, languages } = storeInfoResponse;
@@ -232,11 +240,32 @@ export default function StoreInfoPage() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <iframe className="w-full"
-                            // src={googleMapAddress}
-                            src="https://www.google.com/maps/place/Spring+Education+Center,+Boeung+Salang/@11.5448119,104.9046609,15z/data=!4m6!3m5!1s0x3109512abc981de3:0x14cf0623f51f8967!8m2!3d11.5539756!4d104.8964478!16s%2Fg%2F11td0jkpg5?entry=ttu&g_ep=EgoyMDI1MDIxMC4wIKXMDSoJLDEwMjExNDUzSAFQAw%3D%3D"
-                            height="450" loading="lazy">
-                        </iframe>
+                        <APIProvider apiKey={GOOGLE_MAPS_API_KEY} libraries={['marker']}>
+                            <Map
+                                mapId="8688fdcc01587e0f"
+                                style={{ width: '100%', height: '400px' }}
+                                defaultCenter={{ lat, lng }}
+                                gestureHandling={'greedy'}
+                                disableDefaultUI={true}
+                                zoom={zoom}
+                                onZoomChanged={ev => setZoom(ev.detail.zoom)}
+                            >
+                                <AdvancedMarker
+                                    title={'Store Location'}
+                                    position={{ lat, lng }}
+                                    draggable={false}
+                                >
+                                    <div className="custom-pin">
+                                        <MapPinIcon className="w-10 h-10 text-red-500" />
+                                    </div>
+                                </AdvancedMarker>
+                                <CustomZoomControl
+                                    controlPosition={ControlPosition.RIGHT_BOTTOM}
+                                    zoom={zoom}
+                                    onZoomChange={zoom => setZoom(zoom)}
+                                />
+                            </Map>
+                        </APIProvider>
                     </CardContent>
                 </Card>
             )}

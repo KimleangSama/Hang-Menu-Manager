@@ -1,5 +1,5 @@
 import { BaseResponse } from "../types/base-response";
-import { UpdateStoreFormValues } from "../types/request/update-store-request";
+import { UpdateStoreFormValues, UpdateStoreRequest } from "../types/request/update-store-request";
 import { StoreResponse } from "../types/store-response";
 import { uuidv4 } from "./utils";
 
@@ -46,15 +46,18 @@ export const parseStoreInfoResponse = (form: any, response: BaseResponse<StoreRe
             method: method.method || ""
         })),
         color: response.payload.color || "",
+        lat: response.payload.lat || 0,
+        lng: response.payload.lng || 0,
+        showGoogleMap: response.payload.showGoogleMap || true,
     };
     form.reset(sanitizedData);
 }
 
-export const mapUpdateStoreFormValues = (data: UpdateStoreFormValues) => {
+export const mapUpdateStoreFormValues = (data: UpdateStoreFormValues): UpdateStoreRequest => {
     return {
         name: data.name,
         logo: data.logo,
-        color: data.color,
+        color: data.color || "#4287f5",
         description: data.description,
         physicalAddress: data.physicalAddress,
         virtualAddress: data.virtualAddress,
@@ -64,25 +67,28 @@ export const mapUpdateStoreFormValues = (data: UpdateStoreFormValues) => {
         facebook: data.facebook,
         instagram: data.instagram,
         telegram: data.telegram,
-        operatingHours: data.operatingHours.map(hour => ({
+        operatingHours: (data.operatingHours ?? []).map(hour => ({
             id: hour.id || uuidv4(),
-            day: hour.day,
-            openTime: hour.openTime,
-            closeTime: hour.closeTime,
+            day: hour.day || "",
+            openTime: hour.openTime || "",
+            closeTime: hour.closeTime || "",
         })),
-        orderOptions: data.orderOptions.map(option => ({
+        orderOptions: (data.orderOptions ?? []).map(option => ({
             id: option.id || uuidv4(),
-            name: option.name,
-            description: option.description,
-            feeRanges: option.feeRanges.map(feeRange => ({
+            name: option.name || "",
+            description: option.description || "",
+            feeRanges: (option.feeRanges ?? []).map(feeRange => ({
                 id: feeRange.id || uuidv4(),
-                condition: feeRange.condition,
-                fee: feeRange.fee,
+                condition: feeRange.condition || "",
+                fee: feeRange.fee || 0,
             })),
         })),
-        paymentMethods: data.paymentMethods.map(method => ({
+        paymentMethods: (data.paymentMethods ?? []).map(method => ({
             id: method.id || uuidv4(),
-            method: method.method,
+            method: method.method || "",
         })),
+        lat: data.lat || 0,
+        lng: data.lng || 0,
+        showGoogleMap: data.showGoogleMap || true,
     };
 }

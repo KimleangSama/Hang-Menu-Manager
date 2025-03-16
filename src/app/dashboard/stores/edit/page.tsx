@@ -1,8 +1,6 @@
-"use client";
-
+"use client";;
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import DashboardPage from "../../layout";
 import { storeService } from "@/services/store-service";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,21 +14,49 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Clock, CreditCard, Plus, Minus, Save, Loader2, DollarSign } from "lucide-react";
-import { UpdateStoreFormValues, UpdateStoreRequest } from "../../../../types/request/update-store-request";
+import {
+    Clock,
+    CreditCard,
+    Plus,
+    Minus,
+    Save,
+    Loader2,
+    DollarSign,
+    MapIcon,
+    MapPinIcon,
+} from "lucide-react";
+import { UpdateStoreFormValues, UpdateStoreRequest, updateStoreSchema } from "../../../../types/request/update-store-request";
 import { toast } from "sonner";
 import { mapUpdateStoreFormValues, parseStoreInfoResponse } from "@/lib/update-store";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ImageUpload from "@/components/shared/form/image/image-upload";
 import { fileService } from "@/services/file-service";
 import { API_IMAGE_URL } from "@/constants/auth";
+import { GOOGLE_MAPS_API_KEY } from "@/constants/api";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { AdvancedMarker, APIProvider, ControlPosition, Map } from '@vis.gl/react-google-maps';
+import { CustomZoomControl } from "@/components/map-control";
+import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function StoreEditPage() {
-    const [responseError, setResponseError] = useState(false)
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
+    const [{ responseError, isLoading, isSaving }, setStoreState] = useState({
+        responseError: false,
+        isLoading: true,
+        isSaving: false
+    });
     const [file, setFile] = useState<File | null>(null);
-    const form = useForm<UpdateStoreFormValues>({
+
+    // Group map-related states for better organization
+    const [mapSettings, setMapSettings] = useState({
+        showGoogleMap: true,
+        zoom: 12,
+        coordinates: { lat: 11.5564, lng: 104.9282 },
+        controlPosition: ControlPosition.RIGHT_BOTTOM,
+    });
+
+    const form = useForm<z.infer<typeof updateStoreSchema>>({
         defaultValues: {
             id: "",
             name: "",
@@ -46,11 +72,25 @@ export default function StoreEditPage() {
             telegram: "",
             operatingHours: [],
             orderOptions: [],
-            feeRanges: [],
             paymentMethods: [],
             color: "",
+            lat: 11.5564,
+            lng: 104.9282,
+            showGoogleMap: true,
         },
+        resolver: zodResolver(updateStoreSchema),
     });
+
+    const onMarkerDragEnd = (event: { latLng: google.maps.LatLng | null }) => {
+        if (event.latLng) {
+            const newLat = event.latLng.lat();
+            const newLng = event.latLng.lng();
+            setMapSettings(prev => ({
+                ...prev,
+                coordinates: { lat: newLat, lng: newLng }
+            }));
+        }
+    };
 
     useEffect(() => {
         async function getStoreInfo() {
@@ -58,7 +98,9 @@ export default function StoreEditPage() {
                 const response = await storeService.getStoreOfUser();
                 if (response.success) {
                     parseStoreInfoResponse(form, response);
-                    const logo = response.payload.logo
+
+                    // Handle logo fetching in a safer way
+                    const logo = response.payload.logo;
                     if (logo) {
                         try {
                             const res = await fetch(API_IMAGE_URL + logo);
@@ -66,27 +108,38 @@ export default function StoreEditPage() {
                             setFile(new File([blob], logo, { type: 'image/jpeg' }));
                         } catch (error) {
                             console.error('Failed to fetch logo: ', error);
-                            toast.error('Failed to fetch logo: ' + error);
                         }
                     }
+
+                    setMapSettings(prev => ({
+                        ...prev,
+                        showGoogleMap: response.payload.showGoogleMap,
+                        coordinates: {
+                            lat: response.payload.lat,
+                            lng: response.payload.lng
+                        }
+                    }));
                 } else {
                     console.error('Failed to fetch store info: ', response.error);
-                    toast.error('Failed to fetch store info: ' + response.error);
-                    setResponseError(true)
+                    toast.error(`Failed to fetch store info: ${response.error}`);
+                    setStoreState(prev => ({ ...prev, responseError: true }));
                 }
             } catch (error) {
                 console.error('Failed to fetch store info: ', error);
-                toast.error('Failed to fetch store info: ' + error);
-                setResponseError(true)
+                toast.error(`Failed to fetch store info: ${error}`);
+                setStoreState(prev => ({ ...prev, responseError: true }));
+            } finally {
+                setStoreState(prev => ({ ...prev, isLoading: false }));
             }
-            setIsLoading(false);
         }
         getStoreInfo();
     }, [form]);
 
     const onSubmit = async (data: UpdateStoreFormValues) => {
         try {
-            setIsSaving(true);
+            setStoreState(prev => ({ ...prev, isSaving: true }));
+
+            // Handle file upload
             if (file) {
                 const formData = new FormData();
                 formData.append('file', file);
@@ -94,28 +147,33 @@ export default function StoreEditPage() {
                 if (response.success) {
                     data.logo = response.payload.name;
                 } else {
-                    console.error('Failed to upload logo: ', response.error);
-                    toast.error('Failed to upload logo: ' + response.error);
-                    setIsSaving(false);
+                    toast.error(`Failed to upload logo: ${response.error}`);
                     return;
                 }
             }
+
+            // Add map data to submission
+            const { coordinates, showGoogleMap } = mapSettings;
+            data.lat = coordinates.lat;
+            data.lng = coordinates.lng;
+            data.showGoogleMap = showGoogleMap;
             const toUpdateData: UpdateStoreRequest = mapUpdateStoreFormValues(data);
             const response = await storeService.updateStoreInfo(
                 data.id,
                 toUpdateData
             );
+
             if (response.success) {
                 toast.success('Store updated successfully');
             } else {
                 console.error('Failed to update store: ', response.error);
-                toast.error('Failed to update store: ' + response.error);
+                toast.error(`Failed to update store: ${response.error}`);
             }
-            setIsSaving(false);
         } catch (error) {
             console.error('Failed to update store: ', error);
-            toast.error('Failed to update store: ' + error);
-            setIsSaving(false);
+            toast.error(`Failed to update store: ${error}`);
+        } finally {
+            setStoreState(prev => ({ ...prev, isSaving: false }));
         }
     };
 
@@ -129,22 +187,22 @@ export default function StoreEditPage() {
 
     const removeOrderOption = (index: number) => {
         const currentOptions = form.getValues('orderOptions');
-        form.setValue('orderOptions', currentOptions.filter((_, i) => i !== index));
+        form.setValue('orderOptions', (currentOptions ?? []).filter((_, i) => i !== index));
     };
 
     function removeFeeRange(orderIndex: number, feeIndex: number) {
         const currentOptions = form.getValues('orderOptions');
-        const updatedFeeRanges = currentOptions[orderIndex].feeRanges.filter((_, i) => i !== feeIndex);
-        currentOptions[orderIndex].feeRanges = updatedFeeRanges;
+        const updatedFeeRanges = currentOptions?.[orderIndex]?.feeRanges?.filter((_, i) => i !== feeIndex) || [];
+        (currentOptions ?? [])[orderIndex].feeRanges = updatedFeeRanges;
         form.setValue('orderOptions', currentOptions);
     }
 
     function addFeeRange(orderIndex: number) {
         const currentOptions = form.getValues('orderOptions');
-        const currentFees = currentOptions[orderIndex].feeRanges || [];
-        currentOptions[orderIndex].feeRanges = [
+        const currentFees = (currentOptions?.[orderIndex]?.feeRanges ?? []);
+        (currentOptions ?? [])[orderIndex].feeRanges = [
             ...currentFees,
-            { id: "", condition: '', fee: 0 }
+            { id: "", condition: '', fee: "0" }
         ];
         form.setValue('orderOptions', currentOptions);
     }
@@ -161,22 +219,18 @@ export default function StoreEditPage() {
 
     if (isLoading) {
         return (
-            <>
-                <div className="max-w-4xl mx-auto p-4 space-y-6">
-                    <h1 className="text-3xl font-bold">Loading...</h1>
-                </div>
-            </>
+            <div className="max-w-4xl mx-auto p-4 space-y-6">
+                <h1 className="text-3xl font-bold">Loading...</h1>
+            </div>
         );
     }
 
     if (responseError) {
         return (
-            <>
-                <div className="max-w-4xl mx-auto p-4 space-y-6">
-                    <h1 className="text-3xl font-bold">Failed to fetch store information</h1>
-                </div>
-            </>
-        )
+            <div className="max-w-4xl mx-auto p-4 space-y-6">
+                <h1 className="text-3xl font-bold">Failed to fetch store information</h1>
+            </div>
+        );
     }
 
     return (
@@ -628,6 +682,55 @@ export default function StoreEditPage() {
                                         </div>
                                     ))}
                                 </div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <div className="flex justify-between items-center">
+                                    <CardTitle className="flex items-center gap-2 text-xl">
+                                        <MapIcon className="w-5 h-5" />
+                                        Virtual Address (Google Map)
+                                    </CardTitle>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="flex items-center">
+                                    <Checkbox
+                                        id="virtual-address"
+                                        defaultChecked={mapSettings.showGoogleMap}
+                                        onCheckedChange={() => setMapSettings(prev => ({ ...prev, showGoogleMap: !prev.showGoogleMap }))}
+                                    />
+                                    <Label htmlFor="virtual-address" className="ml-2">Display Virtual Address</Label>
+                                </div>
+                                {mapSettings.showGoogleMap && (
+                                    <APIProvider apiKey={GOOGLE_MAPS_API_KEY} libraries={['marker']}>
+                                        <Map
+                                            mapId="8688fdcc01587e0f"
+                                            style={{ width: '100%', height: '400px' }}
+                                            defaultCenter={mapSettings.coordinates}
+                                            gestureHandling={'greedy'}
+                                            disableDefaultUI={true}
+                                            zoom={mapSettings.zoom}
+                                            onZoomChanged={ev => setMapSettings(prev => ({ ...prev, zoom: ev.detail.zoom }))}
+                                        >
+                                            <AdvancedMarker
+                                                title={'Store Location'}
+                                                position={mapSettings.coordinates}
+                                                draggable
+                                                onDragEnd={onMarkerDragEnd}
+                                            >
+                                                <div className="custom-pin">
+                                                    <MapPinIcon className="w-10 h-10 text-red-500" />
+                                                </div>
+                                            </AdvancedMarker>
+                                            <CustomZoomControl
+                                                controlPosition={mapSettings.controlPosition}
+                                                zoom={mapSettings.zoom}
+                                                onZoomChange={zoom => setMapSettings(prev => ({ ...prev, zoom }))}
+                                            />
+                                        </Map>
+                                    </APIProvider>
+                                )}
                             </CardContent>
                         </Card>
                     </form>

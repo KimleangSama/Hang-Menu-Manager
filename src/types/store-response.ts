@@ -18,6 +18,11 @@ export interface StoreResponse {
     telegram: string
     createdAt: string
     createdBy: string
+    updatedAt: string
+    updatedBy: string
+    lat: number
+    lng: number
+    showGoogleMap: boolean
     hasPrivilege: boolean
     groupId?: string
     storeInfoResponse: StoreInfoResponse
