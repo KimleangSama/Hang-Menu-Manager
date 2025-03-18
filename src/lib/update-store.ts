@@ -31,16 +31,9 @@ export const parseStoreInfoResponse = (form: any, response: BaseResponse<StoreRe
             feeRanges: (option.feeRanges || []).map(range => ({
                 id: range.id || "",
                 condition: range.condition || "",
-                fee: range.fee || 0
+                fee: range.fee || "0"
             }))
         })),
-        feeRanges: (response.payload.storeInfoResponse.orderOptions || []).flatMap(option =>
-            (option.feeRanges || []).map(range => ({
-                id: range.id || "",
-                condition: range.condition || "",
-                fee: range.fee || 0
-            }))
-        ),
         paymentMethods: (response.payload.storeInfoResponse.paymentMethods || []).map(method => ({
             id: method.id || "",
             method: method.method || ""
@@ -80,7 +73,7 @@ export const mapUpdateStoreFormValues = (data: UpdateStoreFormValues): UpdateSto
             feeRanges: (option.feeRanges ?? []).map(feeRange => ({
                 id: feeRange.id || uuidv4(),
                 condition: feeRange.condition || "",
-                fee: feeRange.fee || 0,
+                fee: String(feeRange.fee || "0"),
             })),
         })),
         paymentMethods: (data.paymentMethods ?? []).map(method => ({

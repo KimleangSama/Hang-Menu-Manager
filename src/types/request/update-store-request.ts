@@ -39,7 +39,7 @@ export interface UpdateOrderOption {
 export interface UpdateFeeRange {
     id: string;
     condition?: string;
-    fee?: number;
+    fee?: string;
 }
 
 export interface UpdatePaymentMethod {
@@ -79,7 +79,7 @@ export const updateStoreSchema = z.object({
         feeRanges: z.array(z.object({
             id: z.string().optional(),
             condition: z.string().optional(),
-            fee: z.string().optional(),
+            fee: z.union([z.string(), z.number()]).optional(),
         })).optional(),
     })).optional(),
     paymentMethods: z.array(z.object({

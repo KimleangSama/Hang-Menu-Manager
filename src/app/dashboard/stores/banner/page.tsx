@@ -5,20 +5,13 @@ import { Button } from "@/components/ui/button";
 import { API_IMAGE_URL } from "@/constants/auth";
 import { useStoreResponse } from "@/hooks/use-store";
 import { fileService } from "@/services/file-service";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const BannerPage = () => {
     const store = useStoreResponse(state => state.store);
     const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
-    const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
-
-    useEffect(() => {
-        if (store && store.banner) {
-            setPreviewUrl(API_IMAGE_URL + store.banner);
-        }
-    }, [store]);
 
     const handleSaveButtonClicked = async () => {
         if (!store || !file) {
@@ -30,7 +23,7 @@ const BannerPage = () => {
         try {
             const res = await fileService.uploadFile(store.id, "store-banner", formData);
             if (res.success) {
-                toast.success("Banner updated successfully");
+                toast.success("Banner updated successfully. Reload the page to see the changes.");
             } else {
                 toast.error("Failed to update banner");
             }
@@ -58,10 +51,17 @@ const BannerPage = () => {
                         title="Upload Banner"
                         onUpload={(file) => setFile(file)}
                         reset={false}
-                        previewUrl={previewUrl}
+                        previewUrl={file ? URL.createObjectURL(file) : undefined}
                         aspect={5}
                     />
                 </div>
+                <p className="text-sm text-gray-500 mt-2">Recommended aspect ratio: 5:1</p>
+                {store.banner && (
+                    <div>
+                        <h2 className="text-xl my-4">Current Banner</h2>
+                        <img src={API_IMAGE_URL + store.banner} alt="" className="object-cover w-full h-full" />
+                    </div>
+                )}
             </div>
         </div>
     )

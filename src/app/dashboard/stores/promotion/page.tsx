@@ -123,14 +123,14 @@ const PromotionPage = () => {
             )}
             {store.promotion && (
                 <div>
-                    <h2 className="text-xl my-4">Preview</h2>
+                    <h2 className="text-xl my-4">Current Promotion</h2>
                     <img src={API_IMAGE_URL + store.promotion} alt="" className="object-cover w-full h-full" />
                 </div>
             )}
 
             <Dialog>
                 <DialogTrigger asChild id="file-upload">
-                    <Button variant="outline" className="hidden">Edit Profile</Button>
+                    <Button variant="outline" className="hidden">Edit Promotion</Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-[800px]">
                     <DialogHeader>

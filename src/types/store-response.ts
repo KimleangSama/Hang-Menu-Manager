@@ -52,7 +52,7 @@ export interface OrderOption {
 export interface FeeRange {
     id: string
     condition: string
-    fee: number
+    fee: string
 }
 
 export interface PaymentMethod {

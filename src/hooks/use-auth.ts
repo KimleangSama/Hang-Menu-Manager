@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ACCESS_TOKEN, API_BASE_URL } from '@/constants/auth'

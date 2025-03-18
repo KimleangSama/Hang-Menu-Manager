@@ -538,7 +538,7 @@ export default function StoreEditPage() {
                                                                     <Input
                                                                         {...field}
                                                                         type="text"
-                                                                        onChange={e => field.onChange(e.target.value)}
+                                                                        onChange={e => field.onChange(e.target.value + "")}
                                                                     />
                                                                 </FormControl>
                                                             </FormItem>
