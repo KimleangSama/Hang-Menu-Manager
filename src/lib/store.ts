@@ -8,6 +8,7 @@ export const parseStoreInfoResponse = (form: any, response: BaseResponse<StoreRe
     const sanitizedData = {
         id: response.payload.id || "",
         name: response.payload.name || "",
+        slug: response.payload.slug || "",
         description: response.payload.description || "",
         logo: response.payload.logo || "",
         physicalAddress: response.payload.physicalAddress || "",
@@ -49,6 +50,7 @@ export const parseStoreInfoResponse = (form: any, response: BaseResponse<StoreRe
 export const mapUpdateStoreFormValues = (data: UpdateStoreFormValues): UpdateStoreRequest => {
     return {
         name: data.name,
+        slug: data.slug,
         logo: data.logo,
         color: data.color || "#4287f5",
         description: data.description,

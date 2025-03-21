@@ -24,7 +24,7 @@ export interface StoreResponse {
     lng: number
     showGoogleMap: boolean
     hasPrivilege: boolean
-    groupId?: string
+    groupId: string
     storeInfoResponse: StoreInfoResponse
 }
 

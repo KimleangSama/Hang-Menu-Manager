@@ -23,7 +23,7 @@ const LayoutPage = () => {
         setSelectedLayout(layout);
         const updatedStore = { ...store, layout };
         updateStore(updatedStore);
-        const res = await storeService.updateStoreLayout(store.slug, layout);
+        const res = await storeService.updateStoreLayout(store.id, layout);
         if (res.success) {
             toast.success('Layout updated successfully');
         } else {

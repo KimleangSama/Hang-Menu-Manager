@@ -20,7 +20,6 @@ interface DataTableRowActionsProps {
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
     const { setOpen, setCurrentRow } = useTableListContext()
-    const router = useRouter()
     return (
         <>
             <DropdownMenu modal={false}>
@@ -30,11 +29,11 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
                         className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
                     >
                         <DotsHorizontalIcon className='h-4 w-4' />
-                        <span className='sr-only'>Open menu</span>
+                        <span className='sr-only'>Open category</span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end' className='w-[100px]'>
-                    <DropdownMenuItem
+                    {/* <DropdownMenuItem
                         onClick={() => {
                             router.push(`/dashboard/tables/${row.original.id}/view`)
                         }}
@@ -43,8 +42,8 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
                         <DropdownMenuShortcut>
                             <IconEye size={16} />
                         </DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
+                    </DropdownMenuItem> */}
+                    {/* <DropdownMenuSeparator /> */}
                     <DropdownMenuItem
                         onClick={() => {
                             setCurrentRow(row.original)

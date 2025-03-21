@@ -3,6 +3,7 @@ import { OperatingHour, OrderOption, PaymentMethod } from "../store-response";
 
 export interface UpdateStoreRequest {
     name: string;
+    slug: string;
     description?: string;
     logo?: string;
     color: string;
@@ -55,6 +56,7 @@ export interface UpdateLanguage {
 export const updateStoreSchema = z.object({
     id: z.string().min(1, { message: "Store is required" }),
     name: z.string().min(4, { message: "Name is required and must be at least 4 characters" }),
+    slug: z.string().min(4, { message: "Slug is required and must be at least 4 characters" }),
     description: z.string().optional(),
     logo: z.string().optional(),
     color: z.string().min(1, { message: "Color is required" }),

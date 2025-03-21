@@ -37,23 +37,16 @@ export const menuColumns = (categories: CategoryResponse[]): ColumnDef<MenuRespo
                 <Dialog>
                     <DialogTrigger asChild>
                         <div className='flex items-center justify-start cursor-pointer'>
-                            <img
-                                src={API_IMAGE_URL + image}
-                                alt='Menu Image'
-                                className='w-8 h-8 rounded'
-                                onError={(e) => {
-                                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
-                                }}
-                            />
-                            {/* <Image
+                            <Image
                                 src={API_IMAGE_URL + image}
                                 alt='Menu Image'
                                 width={32}
                                 height={32}
+                                loading='lazy'
                                 onError={(e) => {
                                     e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
                                 }}
-                            /> */}
+                            />
                         </div>
                     </DialogTrigger>
                     <DialogContent className=''>
@@ -91,7 +84,7 @@ export const menuColumns = (categories: CategoryResponse[]): ColumnDef<MenuRespo
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title='Description' />
         ),
-        cell: ({ row }) => <div className='w-fit text-wrap'>{row.getValue('description')}</div>,
+        cell: ({ row }) => <div className='w-44 text-wrap'>{row.getValue('description')}</div>,
         enableSorting: false,
     },
     {

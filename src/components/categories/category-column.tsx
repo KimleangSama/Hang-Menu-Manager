@@ -18,40 +18,40 @@ export const categoryColumns: ColumnDef<CategoryResponse>[] = [
         enableSorting: false,
         size: 100
     },
-    {
-        accessorKey: 'icon',
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title='Icon' />
-        ),
-        cell: ({ row }) => {
-            const { icon, name } = row.original
-            return (
-                <Popover>
-                    <PopoverTrigger>
-                        <div className='flex items-center justify-center'>
-                            <img src={API_BASE_URL + "/files/view/" + icon}
-                                alt='Icon'
-                                className='w-8 h-8'
-                                onError={(e) => {
-                                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
-                                    e.currentTarget.className = 'w-8 rounded'
-                                }}
-                            />
-                        </div>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-92'>
-                        <div className='flex items-center justify-center'>
-                            <img src={API_BASE_URL + "/files/view/" + icon} alt='Icon' className='w-[400px]'
-                                onError={(e) => {
-                                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
-                                    e.currentTarget.className = 'rounded'
-                                }} />
-                        </div>
-                    </PopoverContent>
-                </Popover>
-            )
-        },
-    },
+    // {
+    //     accessorKey: 'icon',
+    //     header: ({ column }) => (
+    //         <DataTableColumnHeader column={column} title='Icon' />
+    //     ),
+    //     cell: ({ row }) => {
+    //         const { icon, name } = row.original
+    //         return (
+    //             <Popover>
+    //                 <PopoverTrigger>
+    //                     <div className='flex items-center justify-center'>
+    //                         <img src={API_BASE_URL + "/files/view/" + icon}
+    //                             alt='Icon'
+    //                             className='w-8 h-8'
+    //                             onError={(e) => {
+    //                                 e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
+    //                                 e.currentTarget.className = 'w-8 rounded'
+    //                             }}
+    //                         />
+    //                     </div>
+    //                 </PopoverTrigger>
+    //                 <PopoverContent className='w-92'>
+    //                     <div className='flex items-center justify-center'>
+    //                         <img src={API_BASE_URL + "/files/view/" + icon} alt='Icon' className='w-[400px]'
+    //                             onError={(e) => {
+    //                                 e.currentTarget.src = `https://ui-avatars.com/api/?name=${name}`
+    //                                 e.currentTarget.className = 'rounded'
+    //                             }} />
+    //                     </div>
+    //                 </PopoverContent>
+    //             </Popover>
+    //         )
+    //     },
+    // },
     {
         accessorKey: 'name',
         header: ({ column }) => (
@@ -65,7 +65,6 @@ export const categoryColumns: ColumnDef<CategoryResponse>[] = [
             <DataTableColumnHeader column={column} title='Description' />
         ),
         cell: ({ row }) => <LongText>{row.getValue('description')}</LongText>,
-        enableSorting: false,
     },
     {
         accessorKey: 'menuCount',

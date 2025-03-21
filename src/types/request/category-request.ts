@@ -21,3 +21,9 @@ export interface CategoryPositionUpdate {
     name: string;
     position: number;
 }
+
+export interface UpdateCategoryRequest {
+    name: string;
+    description: string;
+    storeId: string
+}

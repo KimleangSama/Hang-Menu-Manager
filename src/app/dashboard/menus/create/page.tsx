@@ -33,6 +33,7 @@ import { fileService } from '@/services/file-service';
 const CreateMenuPage = () => {
     const store = useStoreResponse(state => state.store);
     const [file, setFile] = useState<File | null>(null);
+    const [fileError, setFileError] = useState<boolean>(false);
     const [reset, setReset] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
     const [images, setImages] = useState<FileFormat[]>([]);
@@ -42,7 +43,7 @@ const CreateMenuPage = () => {
             code: '',
             name: '',
             description: '',
-            price: "0",
+            price: 0,
             discount: "0",
             currency: "dollar",
             image: '',
@@ -60,7 +61,10 @@ const CreateMenuPage = () => {
     const onSubmit = async (data: CreateMenuFormData) => {
         setIsSubmitting(true);
         try {
-            if (!file) throw new Error("Image is required");
+            if (!file) {
+                setFileError(true);
+                return;
+            }
             const menuResponse = await menuService.createMenu(data);
             if (menuResponse.statusCode === 409) throw new Error("Menu code already exists.");
             if (!menuResponse.success) throw new Error(menuResponse.error);
@@ -99,6 +103,7 @@ const CreateMenuPage = () => {
         form.reset();
         form.setValue('storeId', store?.id || '');
         setFile(null);
+        setFileError(false);
         setFiles([]);
         setImages([]);
         setReset(!reset);
@@ -147,9 +152,11 @@ const CreateMenuPage = () => {
                                             title='Upload Image'
                                             onUpload={(file) => {
                                                 setFile(file);
+                                                setFileError(false);
                                             }}
                                             reset={reset}
                                         />
+                                        {fileError && <p className='text-red-500'>Please upload an image.</p>}
                                     </div>
 
                                     <div className='space-y-2'>
@@ -265,7 +272,10 @@ const CreateMenuPage = () => {
                                                 <FormItem>
                                                     <FormLabel>Price {form.getValues('currency') === 'dollar' ? '($)' : '(៛)'}</FormLabel>
                                                     <FormControl>
-                                                        <Input {...field} type='number' />
+                                                        <Input {...field} type='number' onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            field.onChange(value === "" ? "" : Number(value)); // Convert to number
+                                                        }} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

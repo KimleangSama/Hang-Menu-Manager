@@ -50,6 +50,7 @@ const EditPage = () => {
             badges: [],
             categoryId: '',
             hidden: false,
+            groupId: store?.groupId || '',
             storeId: store?.id || '',
         },
         resolver: zodResolver(editMenuSchema),

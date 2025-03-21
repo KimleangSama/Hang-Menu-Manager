@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { UpdateStoreFormValues, UpdateStoreRequest, updateStoreSchema } from "../../../../types/request/update-store-request";
 import { toast } from "sonner";
-import { mapUpdateStoreFormValues, parseStoreInfoResponse } from "@/lib/update-store";
+import { mapUpdateStoreFormValues, parseStoreInfoResponse } from "@/lib/store";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ImageUpload from "@/components/shared/form/image/image-upload";
 import { fileService } from "@/services/file-service";
@@ -60,6 +60,7 @@ export default function StoreEditPage() {
         defaultValues: {
             id: "",
             name: "",
+            slug: "",
             description: "",
             logo: "",
             physicalAddress: "",

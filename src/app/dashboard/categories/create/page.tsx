@@ -13,7 +13,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { z } from 'zod';
 import { CreateCategoryFormData, createCategorySchema } from '../../../../types/request/category-request';
-import DashboardPage from '@/app/dashboard/layout';
 import { useStoreResponse } from '@/hooks/use-store';
 
 const CreateCategoryPage = () => {
@@ -47,7 +46,7 @@ const CreateCategoryPage = () => {
             }
             const response = await categoryService.createCategory(data);
             if (response.success) {
-                setMessage({ type: "success", text: "Menu category created successfully!" });
+                setMessage({ type: "success", text: "Category created successfully!" });
                 toast.success("Menu category created successfully!");
                 setFile(null);
             } else {
@@ -63,6 +62,8 @@ const CreateCategoryPage = () => {
             setIsSubmitting(false);
         }
     };
+
+    if (!store) return null;
 
     return (
         <div className='mx-auto max-w-4xl'>

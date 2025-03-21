@@ -1,4 +1,5 @@
-"use client";;
+"use client";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Phone, Mail, CreditCard, Store, Globe, MapPinIcon } from "lucide-react";
@@ -15,7 +16,6 @@ import { useState } from "react";
 export default function StoreInfoPage() {
     const store = useStoreResponse((state) => state.store);
     const [zoom, setZoom] = useState(15);
-
 
     if (!store) {
         return (
@@ -43,7 +43,6 @@ export default function StoreInfoPage() {
         color,
         lat,
         lng,
-        showGoogleMap,
         storeInfoResponse
     } = store;
     const { operatingHours, orderOptions, paymentMethods, languages } = storeInfoResponse;
@@ -177,7 +176,7 @@ export default function StoreInfoPage() {
                                                 <div key={fee.id || `fee-${fee.condition}`} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-black rounded">
                                                     <span>{fee.condition}</span>
                                                     <Badge className="text-sm" variant="secondary">
-                                                        ${typeof fee.fee === 'number' ? fee.fee.toFixed(2) : '0.00'}
+                                                        ${typeof fee.fee === 'number' ? fee.fee : '0.00'}
                                                     </Badge>
                                                 </div>
                                             ))}
