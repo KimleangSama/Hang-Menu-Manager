@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Phone, Mail, CreditCard, Store, Globe, MapPinIcon } from "lucide-react";
+import { Clock, MapPin, Phone, Mail, CreditCard, Store, Globe, MapPinIcon, ShoppingCart, SquareArrowOutUpRight } from "lucide-react";
 import { IoLogoFacebook, IoLogoInstagram } from "react-icons/io";
 import { FaTelegramPlane } from "react-icons/fa";
 import { Language, OperatingHour, OrderOption, PaymentMethod } from "../../../../types/store-response";
@@ -12,6 +12,7 @@ import { GOOGLE_MAPS_API_KEY } from "@/constants/api";
 import { AdvancedMarker, APIProvider, ControlPosition, Map } from "@vis.gl/react-google-maps";
 import { CustomZoomControl } from "@/components/map-control";
 import { useState } from "react";
+import NoStore from "@/components/no-store";
 
 export default function StoreInfoPage() {
     const store = useStoreResponse((state) => state.store);
@@ -19,17 +20,13 @@ export default function StoreInfoPage() {
 
     if (!store) {
         return (
-            <div className="max-w-4xl mx-auto p-4 space-y-6">
-                <h1 className="text-3xl font-bold">No Store Found</h1>
-                <h3 className="text-lg">
-                    You do not have any store created yet. Please create a store to view store information.
-                </h3>
-            </div>
+            <NoStore />
         );
     }
 
     const {
         name,
+        slug,
         description,
         logo,
         physicalAddress,
@@ -47,9 +44,21 @@ export default function StoreInfoPage() {
     } = store;
     const { operatingHours, orderOptions, paymentMethods, languages } = storeInfoResponse;
 
+    const isValidLatLng = typeof lat === 'number' && typeof lng === 'number';
+
+    const STORE_URL = process.env.NEXT_PUBLIC_UI_BASE_URL + "/s/" + slug;
+
     return (
         <div className="max-w-4xl mx-auto p-4 space-y-6">
             <h1 className="text-3xl font-bold">Store Information</h1>
+            {STORE_URL && (
+                <div className="flex items-center gap-2">
+                    <SquareArrowOutUpRight className="w-4 h-4 dark:text-gray-300 text-gray-800" />
+                    <a href={STORE_URL} target="_blank" className="text-blue-500">
+                        {STORE_URL}
+                    </a>
+                </div>
+            )}
             <Card>
                 <CardHeader>
                     <div className="flex items-start justify-between">
@@ -70,8 +79,14 @@ export default function StoreInfoPage() {
                 <CardContent className="space-y-4">
                     {physicalAddress && (
                         <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 dark:text-gray-300 text-gray-800" />
+                            <ShoppingCart className="w-4 h-4 dark:text-gray-300 text-gray-800" />
                             <span>{physicalAddress}</span>
+                        </div>
+                    )}
+                    {virtualAddress && (
+                        <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 dark:text-gray-300 text-gray-800" />
+                            <span>{virtualAddress}</span>
                         </div>
                     )}
                     {phone && (
@@ -230,7 +245,7 @@ export default function StoreInfoPage() {
                     </CardContent>
                 </Card>
             )}
-            {virtualAddress && (
+            {isValidLatLng && (
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-xl">

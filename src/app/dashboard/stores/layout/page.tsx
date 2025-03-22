@@ -5,6 +5,7 @@ import { storeService } from "@/services/store-service";
 import { toast } from "sonner";
 import { CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import NoStore from "@/components/no-store";
 
 const LayoutPage = () => {
     const store = useStoreResponse((state) => state.store);
@@ -16,7 +17,7 @@ const LayoutPage = () => {
         setSelectedLayout(store.layout);
     }, [store?.layout]);
 
-    if (!store) return
+    if (!store) return <NoStore />
 
     const handleLayoutChanged = async (layout: string) => {
         if (!layout || layout === store.layout) return;
@@ -27,7 +28,6 @@ const LayoutPage = () => {
         if (res.success) {
             toast.success('Layout updated successfully');
         } else {
-            updateStore(store);
             setSelectedLayout(store.layout);
             toast.error('Failed to update layout ' + res.error);
         }

@@ -14,6 +14,7 @@ import { fileService } from "@/services/file-service";
 import { useStoreResponse } from "@/hooks/use-store";
 import { toast } from "sonner";
 import { API_IMAGE_URL } from "@/constants/auth";
+import NoStore from "@/components/no-store";
 
 const PromotionPage = () => {
     const store = useStoreResponse(state => state.store);
@@ -27,7 +28,7 @@ const PromotionPage = () => {
     }, [store]);
 
     if (!store) {
-        return null;
+        return <NoStore />;
     }
 
     // Remove a file by index

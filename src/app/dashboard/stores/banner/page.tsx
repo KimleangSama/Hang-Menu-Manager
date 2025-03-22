@@ -1,5 +1,6 @@
 "use client";
 
+import NoStore from "@/components/no-store";
 import ImageUpload from "@/components/shared/form/image/image-upload";
 import { Button } from "@/components/ui/button";
 import { API_IMAGE_URL } from "@/constants/auth";
@@ -34,7 +35,7 @@ const BannerPage = () => {
     }
 
     if (!store) {
-        return null;
+        return <NoStore />;
     }
 
     return (

@@ -62,7 +62,7 @@ export const updateStoreSchema = z.object({
     color: z.string().min(1, { message: "Color is required" }),
     physicalAddress: z.string().optional(),
     virtualAddress: z.string().optional(),
-    phone: z.string().min(10, { message: "Phone is required and must be at least 10 characters" }),
+    phone: z.string().min(9, { message: "Phone is required and must be at least 9 characters" }),
     email: z.string().optional(),
     website: z.string().optional(),
     instagram: z.string().optional(),

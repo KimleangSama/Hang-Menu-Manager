@@ -31,11 +31,14 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
 import { API_IMAGE_URL } from "@/constants/auth"
+import { useRouter } from "nextjs-toploader/app"
 
 export function NavUser() {
   const {
-    user
+    user,
+    logout,
   } = useAuth()
+  const router = useRouter()
   const { isMobile } = useSidebar()
   return (
     <SidebarMenu>
@@ -100,7 +103,11 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                logout()
+                router.push("/auth/login")
+              }}>
               <LogOut />
               Log out
             </DropdownMenuItem>

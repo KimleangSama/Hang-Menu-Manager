@@ -4,28 +4,28 @@ import { StoreResponse } from "../types/store-response";
 import { uuidv4 } from "./utils";
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-export const parseStoreInfoResponse = (form: any, response: BaseResponse<StoreResponse>) => {
+export const parseStoreInfoResponse = (form: any, response: StoreResponse) => {
     const sanitizedData = {
-        id: response.payload.id || "",
-        name: response.payload.name || "",
-        slug: response.payload.slug || "",
-        description: response.payload.description || "",
-        logo: response.payload.logo || "",
-        physicalAddress: response.payload.physicalAddress || "",
-        virtualAddress: response.payload.virtualAddress || "",
-        phone: response.payload.phone || "",
-        email: response.payload.email || "",
-        website: response.payload.website || "",
-        facebook: response.payload.facebook || "",
-        instagram: response.payload.instagram || "",
-        telegram: response.payload.telegram || "",
-        operatingHours: (response.payload.storeInfoResponse.operatingHours || []).map(hour => ({
+        id: response.id || "",
+        name: response.name || "",
+        slug: response.slug || "",
+        description: response.description || "",
+        logo: response.logo || "",
+        physicalAddress: response.physicalAddress || "",
+        virtualAddress: response.virtualAddress || "",
+        phone: response.phone || "",
+        email: response.email || "",
+        website: response.website || "",
+        facebook: response.facebook || "",
+        instagram: response.instagram || "",
+        telegram: response.telegram || "",
+        operatingHours: (response.storeInfoResponse.operatingHours || []).map(hour => ({
             id: hour.id || "",
             day: hour.day || "",
             openTime: hour.openTime || "",
             closeTime: hour.closeTime || ""
         })),
-        orderOptions: (response.payload.storeInfoResponse.orderOptions || []).map(option => ({
+        orderOptions: (response.storeInfoResponse.orderOptions || []).map(option => ({
             id: option.id || "",
             name: option.name || "",
             description: option.description || "",
@@ -35,14 +35,14 @@ export const parseStoreInfoResponse = (form: any, response: BaseResponse<StoreRe
                 fee: range.fee || "0"
             }))
         })),
-        paymentMethods: (response.payload.storeInfoResponse.paymentMethods || []).map(method => ({
+        paymentMethods: (response.storeInfoResponse.paymentMethods || []).map(method => ({
             id: method.id || "",
             method: method.method || ""
         })),
-        color: response.payload.color || "",
-        lat: response.payload.lat || 0,
-        lng: response.payload.lng || 0,
-        showGoogleMap: response.payload.showGoogleMap || true,
+        color: response.color || "",
+        lat: response.lat || 0,
+        lng: response.lng || 0,
+        showGoogleMap: response.showGoogleMap || true,
     };
     form.reset(sanitizedData);
 }

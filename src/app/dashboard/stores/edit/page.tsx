@@ -39,11 +39,12 @@ import { AdvancedMarker, APIProvider, ControlPosition, Map } from '@vis.gl/react
 import { CustomZoomControl } from "@/components/map-control";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
+import NoStore from "@/components/no-store";
+import { useStoreResponse } from "@/hooks/use-store";
 
 export default function StoreEditPage() {
-    const [{ responseError, isLoading, isSaving }, setStoreState] = useState({
-        responseError: false,
-        isLoading: true,
+    const store = useStoreResponse(state => state.store);
+    const [{ isSaving }, setStoreState] = useState({
         isSaving: false
     });
     const [file, setFile] = useState<File | null>(null);
@@ -96,12 +97,11 @@ export default function StoreEditPage() {
     useEffect(() => {
         async function getStoreInfo() {
             try {
-                const response = await storeService.getStoreOfUser();
-                if (response.success) {
-                    parseStoreInfoResponse(form, response);
+                if (store) {
+                    parseStoreInfoResponse(form, store);
 
                     // Handle logo fetching in a safer way
-                    const logo = response.payload.logo;
+                    const logo = store.logo;
                     if (logo) {
                         try {
                             const res = await fetch(API_IMAGE_URL + logo);
@@ -114,27 +114,19 @@ export default function StoreEditPage() {
 
                     setMapSettings(prev => ({
                         ...prev,
-                        showGoogleMap: response.payload.showGoogleMap,
+                        showGoogleMap: store.showGoogleMap,
                         coordinates: {
-                            lat: response.payload.lat,
-                            lng: response.payload.lng
+                            lat: typeof store.lat === 'number' ? store.lat : 11.5564,
+                            lng: typeof store.lng === 'number' ? store.lng : 104.9282
                         }
                     }));
-                } else {
-                    console.error('Failed to fetch store info: ', response.error);
-                    toast.error(`Failed to fetch store info: ${response.error}`);
-                    setStoreState(prev => ({ ...prev, responseError: true }));
                 }
-            } catch (error) {
-                console.error('Failed to fetch store info: ', error);
-                toast.error(`Failed to fetch store info: ${error}`);
-                setStoreState(prev => ({ ...prev, responseError: true }));
             } finally {
                 setStoreState(prev => ({ ...prev, isLoading: false }));
             }
         }
         getStoreInfo();
-    }, [form]);
+    }, [store]);
 
     const onSubmit = async (data: UpdateStoreFormValues) => {
         try {
@@ -218,21 +210,7 @@ export default function StoreEditPage() {
         name: "paymentMethods",
     });
 
-    if (isLoading) {
-        return (
-            <div className="max-w-4xl mx-auto p-4 space-y-6">
-                <h1 className="text-3xl font-bold">Loading...</h1>
-            </div>
-        );
-    }
-
-    if (responseError) {
-        return (
-            <div className="max-w-4xl mx-auto p-4 space-y-6">
-                <h1 className="text-3xl font-bold">Failed to fetch store information</h1>
-            </div>
-        );
-    }
+    if (!store) return <NoStore />
 
     return (
         <>
@@ -367,7 +345,7 @@ export default function StoreEditPage() {
                                     name="physicalAddress"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Address</FormLabel>
+                                            <FormLabel>Physical Address</FormLabel>
                                             <FormControl>
                                                 <Input {...field} />
                                             </FormControl>
@@ -380,7 +358,7 @@ export default function StoreEditPage() {
                                     name="virtualAddress"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Map Address</FormLabel>
+                                            <FormLabel>Virtual Address</FormLabel>
                                             <FormControl>
                                                 <Input {...field} />
                                             </FormControl>
