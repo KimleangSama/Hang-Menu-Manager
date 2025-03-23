@@ -1,5 +1,5 @@
 "use client";;
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,14 @@ const CreateMenuPage = () => {
                 return;
             }
             const menuResponse = await menuService.createMenu(data);
-            if (menuResponse.statusCode === 409) throw new Error("Menu code already exists.");
+            if (menuResponse.statusCode === 409) throw new Error("Menu value already exists.");
+            if (menuResponse.statusCode === 417) {
+                toast.error(`${menuResponse.error}. Please remove menu or change to other category.`, {
+                    duration: 2500,
+                    position: "bottom-center",
+                });
+                return;
+            }
             if (!menuResponse.success) throw new Error(menuResponse.error);
             const imageFormData = new FormData();
             imageFormData.append("file", file, file.name);

@@ -1,11 +1,13 @@
-import { BaseResponse } from "../types/base-response";
 import { UpdateStoreFormValues, UpdateStoreRequest } from "../types/request/update-store-request";
 import { StoreResponse } from "../types/store-response";
 import { uuidv4 } from "./utils";
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-export const parseStoreInfoResponse = (form: any, response: StoreResponse) => {
-    const sanitizedData = {
+export const parseStoreInfoResponse = (form: any, response: StoreResponse | null) => {
+    if (!response) {
+        return;
+    }
+    const formData = {
         id: response.id || "",
         name: response.name || "",
         slug: response.slug || "",
@@ -44,7 +46,7 @@ export const parseStoreInfoResponse = (form: any, response: StoreResponse) => {
         lng: response.lng || 0,
         showGoogleMap: response.showGoogleMap || true,
     };
-    form.reset(sanitizedData);
+    form.reset(formData);
 }
 
 export const mapUpdateStoreFormValues = (data: UpdateStoreFormValues): UpdateStoreRequest => {

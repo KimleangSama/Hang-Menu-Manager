@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -31,11 +31,9 @@ const CreateCategoryPage = () => {
     })
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
     const onSubmit = async (data: CreateCategoryFormData) => {
         setIsSubmitting(true);
-        setMessage(null);
         try {
             if (file) {
                 const fd = new FormData();
@@ -44,24 +42,33 @@ const CreateCategoryPage = () => {
                 // if (!uploadResponse.success) throw new Error(uploadResponse.error);
                 // data.icon = uploadResponse.payload.name;
             }
+            data.storeId = store?.id || '';
             const response = await categoryService.createCategory(data);
+            console.log(response)
             if (response.success) {
-                setMessage({ type: "success", text: "Category created successfully!" });
                 toast.success("Menu category created successfully!");
                 setFile(null);
             } else {
                 if (response.statusCode === 409) {
-                    setMessage({ type: "error", text: "Category with this name already exists." });
+                    toast.error("Category with this name already exists.");
+                } else if (response.statusCode === 417) {
+                    toast.error(response.error);
                 }
             }
         }
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         catch (error: any) {
-            setMessage({ type: "error", text: error.message || "An error occurred." });
+            toast.error(error.message);
         } finally {
             setIsSubmitting(false);
         }
     };
+
+    useEffect(() => {
+        return () => {
+            setFile(null);
+        }
+    }, [store]);
 
     if (!store) return null;
 
@@ -69,13 +76,14 @@ const CreateCategoryPage = () => {
         <div className='mx-auto max-w-4xl'>
             <div className="p-4 space-y-6">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <form className="space-y-6">
                         <div className="sticky top-1 z-10 flex justify-between items-center">
                             <h1 className="text-3xl font-bold">Create Menu Category</h1>
-                            <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Creating..." : "Create"}</Button>
+                            <Button type="button" onClick={() => {
+                                onSubmit(form.getValues());
+                            }} disabled={isSubmitting}>{isSubmitting ? "Creating..." : "Create"}</Button>
                         </div>
                         <Card className="p-6">
-                            {message && <Alert className={`mb-2 ${message.type === 'error' ? '' : 'text-green-500'}`} variant={message.type === "error" ? "destructive" : "default"}><AlertDescription>{message.text}</AlertDescription></Alert>}
                             <div className='grid grid-cols-1 gap-4'>
                                 <div className="space-y-2">
                                     <FormField

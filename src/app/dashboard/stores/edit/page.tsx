@@ -1,4 +1,5 @@
-"use client";;
+"use client";
+
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { storeService } from "@/services/store-service";
@@ -97,8 +98,10 @@ export default function StoreEditPage() {
     useEffect(() => {
         async function getStoreInfo() {
             try {
+                const response = await storeService.getStoreOfUser();
+                console.log(response)
                 if (store) {
-                    parseStoreInfoResponse(form, store);
+                    parseStoreInfoResponse(form, response.payload);
 
                     // Handle logo fetching in a safer way
                     const logo = store.logo;
@@ -126,7 +129,8 @@ export default function StoreEditPage() {
             }
         }
         getStoreInfo();
-    }, [store]);
+    }, [form, store]);
+
 
     const onSubmit = async (data: UpdateStoreFormValues) => {
         try {
@@ -139,9 +143,7 @@ export default function StoreEditPage() {
                 const response = await fileService.updateFile(formData);
                 if (response.success) {
                     data.logo = response.payload.name;
-                } else {
-                    toast.error(`Failed to upload logo: ${response.error}`);
-                    return;
+                    toast.success('Logo uploaded successfully');
                 }
             }
 
@@ -310,7 +312,15 @@ export default function StoreEditPage() {
                                         )}
                                     />
 
-                                    <img src={file ? URL.createObjectURL(file) : undefined} alt="logo" className="w-24 h-24 object-cover" />
+                                    <img
+                                        src={file ? URL.createObjectURL(file) : undefined}
+                                        alt="logo"
+                                        className="w-20 h-20 object-cover rounded-md"
+                                        onError={(e) => {
+                                            e.currentTarget.src = 'https://placehold.co/100x100';
+                                        }}
+                                    />
+
 
                                     <FormField
                                         control={form.control}

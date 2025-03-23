@@ -15,7 +15,6 @@ class CategoryService extends APIService {
     }
     async createCategory(data: CreateCategoryFormData): Promise<BaseResponse<CategoryResponse>> {
         try {
-            console.log(data)
             const response = await this.post<BaseResponse<CategoryResponse>, CreateCategoryFormData>('/categories/create', data);
             return response;
         } catch (error) {
