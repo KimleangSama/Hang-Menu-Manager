@@ -1,9 +1,7 @@
-"use client";
-
+"use client";;
 import { DataTableSkeleton } from "@/components/shared/table/data-table-skeleton";
 import { staffColumns } from "@/components/staffs/staff-column";
 import { DataTable } from "@/components/staffs/staff-data";
-import { useAuth } from "@/hooks/use-auth";
 import useDialogState from "@/hooks/use-dialog";
 import { useStoreResponse } from "@/hooks/use-store";
 import TableListContextProvider, { TableListDialogType } from "@/providers/table-list-provider";

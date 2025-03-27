@@ -13,7 +13,7 @@ export const feedbackColumns: ColumnDef<FeedbackResponse>[] = [
         cell: ({ row }) => {
             const { id } = row.original;
             const truncatedId = id?.length > 16 ? `${id.slice(0, 12)}....` : id;
-            return <p className="w-24 truncate">{id}</p>;
+            return <p className="w-24 truncate">{truncatedId}</p>;
         },
     },
     {

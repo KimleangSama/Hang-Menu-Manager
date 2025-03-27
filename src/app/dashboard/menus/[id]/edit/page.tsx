@@ -117,7 +117,7 @@ const EditPage = () => {
                 setMessage({ type: "success", text: "Menu updated successfully" });
                 toast.success("Menu updated successfully");
             } else {
-                setMessage({ type: "error", text: res.error });
+                setMessage({ type: "error", text: res.error || '' });
                 toast.error(res.error);
             }
         } catch (error) {
@@ -197,11 +197,11 @@ const EditPage = () => {
                         }
                     } else {
                         toast.error(menuRes.error);
-                        setMessage({ type: "error", text: menuRes.error });
+                        setMessage({ type: "error", text: menuRes.error || '' });
                     }
                 } else {
                     toast.error(categoriesRes.error);
-                    setMessage({ type: "error", text: categoriesRes.error });
+                    setMessage({ type: "error", text: categoriesRes.error || '' });
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);

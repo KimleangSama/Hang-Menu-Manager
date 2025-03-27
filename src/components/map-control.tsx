@@ -1,7 +1,4 @@
 import { ControlPosition, MapControl } from '@vis.gl/react-google-maps';
-import React from 'react';
-import { Slider } from './ui/slider';
-import { cn } from '@/lib/utils';
 
 type CustomZoomControlProps = {
     controlPosition: ControlPosition;

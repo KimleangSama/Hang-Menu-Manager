@@ -33,6 +33,7 @@ export const editMenuSchema = z.object({
     badges: z.array(z.string()).optional(),
     hidden: z.boolean(),
     storeId: z.string().min(1, { message: "Store is required" }),
+    groupId: z.string().optional(),
 });
 
 export type EditMenuFormData = z.infer<typeof editMenuSchema>;

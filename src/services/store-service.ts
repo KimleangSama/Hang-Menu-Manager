@@ -16,7 +16,7 @@ class StoreService extends APIService {
 
     async updateStoreLayout(id: string, layout: string) {
         try {
-            const response = await this.patch<BaseResponse<StoreResponse>, Object>(`/stores/${id}/layout?layout=${layout}`, {});
+            const response = await this.patch<BaseResponse<StoreResponse>, object>(`/stores/${id}/layout?layout=${layout}`, {});
             return response;
         } catch (error) {
             console.error(error)

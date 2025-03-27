@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { Row } from '@tanstack/react-table'
-import { IconEdit, IconEye, IconTrash } from '@tabler/icons-react'
+import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -11,7 +11,6 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useTableListContext } from '@/providers/table-list-provider'
-import { useRouter } from 'nextjs-toploader/app'
 import { CategoryResponse } from '../../types/category-response'
 
 interface DataTableRowActionsProps {

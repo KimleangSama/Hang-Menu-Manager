@@ -1,5 +1,4 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/shared/table/data-table-column-header'
 import LongText from '@/components/shared/text/long-text'
 import { OrderListResponse } from '@/types/order-response'

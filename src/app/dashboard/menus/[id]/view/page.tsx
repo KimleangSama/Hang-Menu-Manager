@@ -32,7 +32,7 @@ const ViewPage = () => {
             }
         }
         fetchTable();
-    }, []);
+    }, [params.id]);
 
     if (!menuResponse) {
         return (

@@ -1,7 +1,5 @@
-"use client";
-
+"use client";;
 import { Button } from "@/components/ui/button";
-import DashboardPage from "../../layout";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 

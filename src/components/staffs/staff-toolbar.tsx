@@ -3,7 +3,6 @@ import { Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableViewOptions } from '@/components/shared/table/data-table-view-options'
-import { DataTableFacetedFilter } from '../shared/table/data-table-faceted-filter'
 
 interface DataTableToolbarProps<TData> {
     table: Table<TData>

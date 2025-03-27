@@ -68,7 +68,7 @@ const CreateMenuPage = () => {
             const menuResponse = await menuService.createMenu(data);
             if (menuResponse.statusCode === 409) throw new Error("Menu value already exists.");
             if (menuResponse.statusCode === 417) {
-                toast.error(`${menuResponse.error}. Please remove menu or change to other category.`, {
+                toast.error(`Maximum menu reached. Please remove menu or change to other category.`, {
                     duration: 2500,
                     position: "bottom-center",
                 });
@@ -86,8 +86,10 @@ const CreateMenuPage = () => {
                 if (!slideUploadResponse.success) throw new Error(slideUploadResponse.error);
             }
             toast.success("Menu created successfully!");
-            resetForm();
-        } catch (error: any) {
+            // resetForm();
+        }
+        /* eslint-disable  @typescript-eslint/no-explicit-any */
+        catch (error: any) {
             console.error(error);
             toast.error(error.message);
         } finally {

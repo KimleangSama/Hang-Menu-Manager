@@ -17,6 +17,7 @@ import { storeService } from "@/services/store-service"
 import { redirect } from "next/navigation"
 import { useEffect } from "react"
 import { toast } from "sonner"
+import NavNotification from "@/components/nav-noti";
 
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -60,6 +61,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <NavBreadcrumbs />
           </div>
           <div className='flex items-center gap-2 ml-auto mx-1'>
+            <div className="mx-3">
+            <NavNotification />
+            </div>
             <NavTheme />
             <NavLanguage />
           </div>

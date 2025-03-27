@@ -1,10 +1,8 @@
-"use client";
-
-import React, { useEffect, useState } from 'react';
+"use client";;
+import { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { categoryService } from '@/services/category-service';
 import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
@@ -44,7 +42,14 @@ const CreateCategoryPage = () => {
             }
             data.storeId = store?.id || '';
             const response = await categoryService.createCategory(data);
-            console.log(response)
+            console.error(response)
+            if (response.statusCode === 417) {
+                toast.error(`Maximum category reached. Please delete the existing category first.`, {
+                    duration: 2500,
+                    position: "bottom-center",
+                });
+                return;
+            }
             if (response.success) {
                 toast.success("Menu category created successfully!");
                 setFile(null);
