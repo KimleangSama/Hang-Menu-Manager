@@ -12,12 +12,17 @@ import { SheetTitle } from '../ui/sheet'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { CategoryResponse } from '@/types/category-response';
 import { menuService } from '@/services/menu-service';
+import { useStoreResponse } from '@/hooks/use-store';
+import { toast } from 'sonner';
+import { useAuth } from '@/hooks/use-auth';
 
-const handleCategoryChange = async (menuId: string | undefined, categoryId: string) => {
+const handleCategoryChange = async (menuId: string | undefined, store: string, categoryId: string) => {
     try {
-        const res = await menuService.updateMenuCategory(menuId, categoryId);
+        const res = await menuService.updateMenuCategory(menuId, store, categoryId);
         if (res.success) {
-            console.log('Category updated successfully');
+            toast.success('Category updated successfully');
+        } else {
+            toast.error('Failed to update category');
         }
     } catch (error) {
         console.error('Failed to update category:', error);
@@ -127,13 +132,19 @@ export const menuColumns = (categories: CategoryResponse[]): ColumnDef<MenuRespo
             <DataTableColumnHeader column={column} title='Category' />
         ),
         cell: ({ row }) => {
+            const { user } = useAuth();
+            const store = useStoreResponse(state => state.store)
             const { categoryId } = row.original;
+            const disabled = user?.roles?.some(role => role.name === 'admin')
+                || user?.roles?.some(role => role.name === 'manager')
+                || user?.roles?.some(role => role.name === 'staff');
             return (
                 <Select
+                    disabled={disabled}
                     defaultValue={categoryId}
                     onValueChange={(value) => {
-                        console.log('Selected category:', value);
-                        handleCategoryChange(row.original.id, value);
+                        if (!store) return;
+                        handleCategoryChange(row.original.id, store?.id, value);
                     }}
                 >
                     <SelectTrigger className="w-full">

@@ -56,10 +56,10 @@ export default function Page() {
         toast.success("Successfully logged in")
       }
     })
-    /* eslint-disable  @typescript-eslint/no-explicit-any */
-    .catch((error: any) => {
-      toast.error("" + error)
-    })
+      /* eslint-disable  @typescript-eslint/no-explicit-any */
+      .catch((error: any) => {
+        toast.error("" + error)
+      })
   }
 
   return (

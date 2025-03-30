@@ -7,6 +7,7 @@ import { OverviewResponse } from '@/types/overview-response';
 import { IconCash } from '@tabler/icons-react';
 import { DollarSignIcon, ListOrderedIcon, MenuIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 export default function Overview() {
     const store = useStoreResponse(state => state.store);
@@ -18,6 +19,13 @@ export default function Overview() {
                 const response = await dashboardService.getDashboardOverview(store?.id);
                 if (response.success) {
                     setOverview(response.payload);
+                } else if (response.statusCode === 403 || response.statusCode === 401) {
+                    // Handle unauthorized access
+                    console.error('Unauthorized access to dashboard overview');
+                    toast.error('You are not authorized to access this page');
+                    setTimeout(() => {
+                        window.location.href = '/auth/login';
+                    }, 1500);
                 }
             }
         }

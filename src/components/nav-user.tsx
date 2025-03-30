@@ -32,14 +32,25 @@ import {
 import { useAuth } from "@/hooks/use-auth"
 import { API_IMAGE_URL } from "@/constants/auth"
 import { useRouter } from "nextjs-toploader/app"
+import { useEffect } from "react"
 
 export function NavUser() {
   const {
     user,
     logout,
+    accessToken,
+    fetchUserInfo,
   } = useAuth()
+  
   const router = useRouter()
   const { isMobile } = useSidebar()
+
+  useEffect(() => {
+    if (!user && accessToken) {
+      fetchUserInfo(accessToken)
+    }
+  }, [accessToken])
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>

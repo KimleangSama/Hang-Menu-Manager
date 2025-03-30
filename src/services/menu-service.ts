@@ -40,9 +40,10 @@ class MenuService extends APIService {
             throw error
         }
     }
-    async updateMenuCategory(menuId: string | undefined, categoryId: string): Promise<BaseResponse<MenuResponse>> {
+    async updateMenuCategory(menuId: string | undefined, storeId: string, categoryId: string): Promise<BaseResponse<MenuResponse>> {
         try {
-            const response = await this.patch<BaseResponse<MenuResponse>, object>(`/menus/${menuId}/update-category?id=${categoryId}`, {
+            const response = await this.patch<BaseResponse<MenuResponse>, object>(`/menus/${menuId}/update-category`, {
+                storeId,
                 categoryId
             });
             return response;

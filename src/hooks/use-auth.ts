@@ -12,9 +12,14 @@ interface User {
     username: string
     profileUrl: string
     email: string
-    roles: string[]
+    roles: Role[]
     createdAt: string
     updatedAt: string
+}
+
+interface Role {
+    id: string
+    name: string
 }
 
 interface AuthState {
@@ -92,6 +97,7 @@ export const useAuthStore = create<AuthState>()(
                     const { data } = await axios.get(API_BASE_URL + '/auth/me', {
                         headers: { Authorization: `Bearer ${accessToken}` },
                     })
+                    console.log(data)
                     set({ user: data.payload, isAuthenticated: true, isLoading: false })
                 } catch (error) {
                     get().logout()
@@ -123,6 +129,7 @@ export const useAuth = ({ requiredAuth }: { requiredAuth?: boolean } = { require
     useEffect(() => {
         // If we have a token but no user info, fetch it
         if (accessToken && !user) {
+            console.log('Fetching user info with access token:', accessToken)
             fetchUserInfo(accessToken)
         }
         // Handle authentication requirements
@@ -130,7 +137,7 @@ export const useAuth = ({ requiredAuth }: { requiredAuth?: boolean } = { require
         if (requiredAuth && !isLoading && !isAuthenticated && !authStorage) {
             router.push('/auth/login')
         }
-    }, [isAuthenticated, isLoading, router, requiredAuth, accessToken, user, fetchUserInfo])
+    }, [])
 
     return {
         isAuthenticated,

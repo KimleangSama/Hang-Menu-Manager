@@ -18,10 +18,11 @@ import { redirect } from "next/navigation"
 import { useEffect } from "react"
 import { toast } from "sonner"
 import NavNotification from "@/components/nav-noti";
+import { useAuth } from "@/hooks/use-auth";
 
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  // const { user } = useAuth();
+  const { logout } = useAuth();
   // if (!user) {
   //   redirect('/auth/login');
   // }
@@ -35,15 +36,26 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           if (response.success) {
             useStoreResponse.setState({ store: response.payload });
           } else {
-            if (response.statusCode === 403 || response.statusCode === 401) {
+            if (response.statusCode === 403) {
+              toast.error('Your account does not have permission to access this page');
+              setTimeout(() => {
+                logout();
+                redirect('/auth/login');
+              }, 1500);
+            } else if (response.statusCode === 401) {
               toast.error('You are not authorized to access this page');
               setTimeout(() => {
+                logout();
                 redirect('/auth/login');
-              }, 1000);
+              }, 1500);
             }
           }
         } catch (error) {
           console.error('Failed to fetch store info:', error);
+          toast.error(`Failed to fetch store info: ${String(error)}`);
+          setTimeout(() => {
+            redirect('/auth/login');
+          }, 1000);
         }
       }
       getStoreInfo();
@@ -62,7 +74,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
           <div className='flex items-center gap-2 ml-auto mx-1'>
             <div className="mx-3">
-            <NavNotification />
+              <NavNotification />
             </div>
             <NavTheme />
             <NavLanguage />
