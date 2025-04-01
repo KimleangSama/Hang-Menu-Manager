@@ -25,6 +25,8 @@ export interface StoreResponse {
     showGoogleMap: boolean
     hasPrivilege: boolean
     groupId: string
+    isArchived: boolean
+    expiredAt: string
     storeInfoResponse: StoreInfoResponse
 }
 
