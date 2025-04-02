@@ -28,8 +28,11 @@ const BannerPage = () => {
             } else {
                 toast.error("Failed to update banner");
             }
-        } catch (error) {
-            console.log(error);
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+        } catch (error: any) {
+            if (error.status === 403) {
+                toast.error("You are not authorized to perform this action.");
+            }
         }
         setLoading(false);
     }

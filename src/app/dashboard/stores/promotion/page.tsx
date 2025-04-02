@@ -46,9 +46,11 @@ const PromotionPage = () => {
             const fileResponse = await fileService.uploadFile(store?.id, 'store-promotion', fd);
             console.log(fileResponse);
             toast.info('Promotion uploaded successfully');
-        } catch (error) {
-            console.error(error);
-            toast.error('Failed to upload promotion');
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+        } catch (error: any) {
+            if (error.status === 403) {
+                toast.error('You are not authorized to perform this action.');
+            }
         }
         setLoading(false)
     };

@@ -58,7 +58,7 @@ export const coreSideNav: SideNav[] = [
             {
                 title: "Banner",
                 url: "/dashboard/stores/banner",
-                roles: ["manager", "staff"],
+                roles: ["manager"],
             },
             {
                 title: "Promotion",

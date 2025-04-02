@@ -18,7 +18,6 @@ class FileService {
             }
             throw new Error('Token not found');
         } catch (error) {
-            console.error(error)
             throw error
         }
     }
@@ -36,7 +35,6 @@ class FileService {
             }
             throw new Error('Token not found');
         } catch (error) {
-            console.error(error)
             throw error
         }
     }
@@ -54,7 +52,6 @@ class FileService {
             }
             throw new Error('Token not found');
         } catch (error) {
-            console.error(error)
             throw error
         }
     }

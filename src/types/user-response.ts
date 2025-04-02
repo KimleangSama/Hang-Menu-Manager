@@ -12,3 +12,9 @@ export interface RoleResponse {
     id: string
     name: string
 }
+
+export interface GroupResponse {
+    id: string
+    name: string
+    description: string
+}

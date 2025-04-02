@@ -27,7 +27,16 @@ export const staffColumns: ColumnDef<UserResponse>[] = [
         ),
         cell: ({ row }) => {
             const profileUrl = row.getValue('profileUrl')
-            return <img src={API_IMAGE_URL + profileUrl} alt='profile' className='w-8 h-8 rounded-full' />
+            return (
+                <img src={API_IMAGE_URL + profileUrl}
+                    alt='profile'
+                    className='w-8 h-8 rounded-full'
+                    onError={(e) => {
+                        e.currentTarget.src = 'https://ui-avatars.com/api/?name=' + row.getValue('fullname')
+                        e.currentTarget.onerror = null
+                    }}
+                />
+            )
         },
     },
     {

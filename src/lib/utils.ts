@@ -17,30 +17,43 @@ export const getNAIfNull = (value: string | undefined | null) => value ?? 'N/A'
 
 export const getCurrencyLabel = (currency: string | undefined | null) => {
   switch (currency) {
-      case 'dollar':
-          return "$";
-      case 'riel':
-          return "R";
-      default:
-          return "Unknown Currency";
+    case 'dollar':
+      return "$";
+    case 'riel':
+      return "R";
+    default:
+      return "Unknown Currency";
   }
 };
 
 export const getStatusLabel = (status: string | undefined | null) => {
   switch (status) {
-      case 'pending':
-          return "Pending";
-      case 'preparing':
-          return "Preparing";
-      case 'ready':
-          return "Ready";
-      case 'delivered':
-          return "Delivered";
-      case 'canceled':
-          return "Canceled";
-      case 'completed':
-          return "Completed";
-      default:
-          return "Unknown Status";
+    case 'pending':
+      return "Pending";
+    case 'preparing':
+      return "Preparing";
+    case 'ready':
+      return "Ready";
+    case 'delivered':
+      return "Delivered";
+    case 'canceled':
+      return "Canceled";
+    case 'completed':
+      return "Completed";
+    default:
+      return "Unknown Status";
   }
 };
+
+export function filterDuplicateEntryMessage(toastMessage: string): string {
+  const regex = /Key \((.*?)\)=\((.*?)\) already exists\./;
+  const match = toastMessage.match(regex);
+
+  if (match) {
+    const field = match[1];
+    const value = match[2];
+    return `The ${field} '${value}' is already in use. Please use a different value.`;
+  }
+
+  return "An unknown error occurred. Please try again.";
+}

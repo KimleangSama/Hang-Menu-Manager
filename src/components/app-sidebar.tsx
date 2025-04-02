@@ -33,6 +33,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           label="User & Feedback"
           items={staffSideNav}
         />
+        <p className="mx-2 text-xs text-gray-300 text-center">
+          The sidebar is showing only those accessible to the your user.
+        </p>
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

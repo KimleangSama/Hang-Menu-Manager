@@ -50,7 +50,7 @@ export function NavMain({ label, items }: { label: string, items: SideNav[] }) {
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarMenu>
         {items
-          .filter(hasAccess) // ✅ Filter out items the user doesn't have access to
+          .filter(hasAccess)
           .map((item) => {
             const hasSubItems = (item.items ?? []).length > 0
             return (
@@ -69,7 +69,7 @@ export function NavMain({ label, items }: { label: string, items: SideNav[] }) {
                   {hasSubItems && (
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items?.filter(hasAccess) // ✅ Filter sub-items as well
+                        {item.items?.filter(hasAccess)
                           .map(subItem => (
                             <SidebarMenuSubItem key={subItem.title}>
                               <SidebarMenuSubButton asChild>
