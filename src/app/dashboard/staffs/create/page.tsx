@@ -1,4 +1,5 @@
 "use client";;
+import NoStore from "@/components/no-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -57,6 +58,8 @@ export default function CreateStaffPage() {
             setValue("groupId", store.groupId);
         }
     }, [store, setValue]);
+
+    if (!store) return <NoStore />;
 
     return (
         <div className='max-w-4xl mx-auto flex xl:flex-nowrap flex-wrap'>

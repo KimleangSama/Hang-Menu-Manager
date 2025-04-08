@@ -26,6 +26,8 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { ScrollArea } from '../ui/scroll-area'
 import { ScrollAreaScrollbar } from '@radix-ui/react-scroll-area'
 import { DataTableToolbar } from './staff-toolbar'
+import { useAuth } from '@/hooks/use-auth'
+import { UserResponse } from '@/types/user-response'
 
 declare module '@tanstack/react-table' {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -36,12 +38,13 @@ declare module '@tanstack/react-table' {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function DataTable({ columns, data }: any) {
+    const { user } = useAuth()
     const [rowSelection, setRowSelection] = useState({})
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [sorting, setSorting] = useState<SortingState>([])
 
-    const table = useReactTable({
+    const table = useReactTable<UserResponse>({
         data,
         columns,
         state: {
@@ -106,11 +109,12 @@ export function DataTable({ columns, data }: any) {
                                 virtualizer.getVirtualItems().map((virtualRow, index) => {
                                     const row = rows[virtualRow.index]
                                     if (!row) return null
+                                    const isCurrentUser = row.original.id === user?.id
                                     return (
                                         <TableRow
                                             key={row.id}
                                             data-state={row.getIsSelected() && 'selected'}
-                                            className='group/row'
+                                            className={`group/row ${isCurrentUser ? 'bg-gray-100 dark:bg-gray-500' : ''}`}
                                             style={{
                                                 height: `${virtualRow.size}px`,
                                                 transform: `translateY(${virtualRow.start - index * virtualRow.size}px)`,

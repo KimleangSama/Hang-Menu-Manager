@@ -1,5 +1,6 @@
 "use client";
 
+import NoStore from '@/components/no-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useStoreResponse } from '@/hooks/use-store';
 import { dashboardService } from '@/services/dashboard-service';
@@ -32,7 +33,7 @@ export default function Overview() {
         fetchData();
     }, [store]);
 
-    if (!overview) return null;
+    if (!overview) return <NoStore />;
 
     return (
         <div className='max-w-full flex xl:flex-nowrap flex-wrap'>

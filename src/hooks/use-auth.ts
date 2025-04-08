@@ -52,7 +52,7 @@ export const useAuthStore = create<AuthState>()(
                         return data;
                     } else {
                         set({ isLoading: false })
-                        console.error(data)
+                        console.error(data?.error)
                         throw new Error(data?.error)
                     }
                 } catch (error) {
@@ -97,7 +97,6 @@ export const useAuthStore = create<AuthState>()(
                     const { data } = await axios.get(API_BASE_URL + '/auth/me', {
                         headers: { Authorization: `Bearer ${accessToken}` },
                     })
-                    console.log(data)
                     set({ user: data.payload, isAuthenticated: true, isLoading: false })
                 } catch (error) {
                     get().logout()

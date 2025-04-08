@@ -29,6 +29,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { menuService } from '@/services/menu-service';
 import { fileService } from '@/services/file-service';
+import NoStore from '@/components/no-store';
 
 const CreateMenuPage = () => {
     const store = useStoreResponse(state => state.store);
@@ -134,6 +135,18 @@ const CreateMenuPage = () => {
         };
         fetchCategories();
     }, [store, form]);
+
+    if (!store) return <NoStore />;
+    if (categories.length === 0) {
+        return (
+            <div className="max-w-4xl mx-auto p-4 space-y-6">
+                <h1 className="text-3xl font-bold">No Categories Found</h1>
+                <h3 className="text-lg">
+                    Please create a category to create menu.
+                </h3>
+            </div>
+        )
+    }
 
     return (
         <>

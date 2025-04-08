@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { z } from 'zod';
 import { CreateCategoryFormData, createCategorySchema } from '../../../../types/request/category-request';
 import { useStoreResponse } from '@/hooks/use-store';
+import NoStore from '@/components/no-store';
 
 const CreateCategoryPage = () => {
     const store = useStoreResponse(state => state.store);
@@ -42,21 +43,19 @@ const CreateCategoryPage = () => {
             }
             data.storeId = store?.id || '';
             const response = await categoryService.createCategory(data);
-            console.error(response)
-            if (response.statusCode === 417) {
-                toast.error(`Maximum category reached. Please delete the existing category first.`, {
-                    duration: 2500,
-                    position: "bottom-center",
-                });
-                return;
-            }
             if (response.success) {
                 toast.success("Menu category created successfully!");
                 setFile(null);
             } else {
-                if (response.statusCode === 409) {
+                if (response.statusCode === 417) {
+                    toast.error(`Maximum category reached. Please delete the existing category first.`, {
+                        duration: 2500,
+                        position: "bottom-center",
+                    });
+                    return;
+                } else if (response.statusCode === 409) {
                     toast.error("Category with this name already exists.");
-                } else if (response.statusCode === 417) {
+                } else {
                     toast.error(response.error);
                 }
             }
@@ -75,7 +74,7 @@ const CreateCategoryPage = () => {
         }
     }, [store]);
 
-    if (!store) return null;
+    if (!store) return <NoStore />;
 
     return (
         <div className='mx-auto max-w-4xl'>

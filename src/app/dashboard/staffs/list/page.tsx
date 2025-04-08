@@ -1,9 +1,10 @@
-"use client";;
+"use client";
+
 import { DataTableSkeleton } from "@/components/shared/table/data-table-skeleton";
 import { staffColumns } from "@/components/staffs/staff-column";
 import { DataTable } from "@/components/staffs/staff-data";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useAuth } from "@/hooks/use-auth";
 import useDialogState from "@/hooks/use-dialog";
 import { useStoreResponse } from "@/hooks/use-store";
 import TableListContextProvider, { TableListDialogType } from "@/providers/table-list-provider";
@@ -16,6 +17,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function StaffPage() {
+    const { user } = useAuth()
     const store = useStoreResponse(state => state.store)
     const [loading, setLoading] = useState(true)
     const [staffs, setStaffs] = useState<UserResponse[]>([]);
@@ -68,6 +70,10 @@ export default function StaffPage() {
                                     }}>Cancel</AlertDialogCancel>
                                 <AlertDialogAction onClick={async () => {
                                     setOpen(null)
+                                    if (currentRow?.id === user?.id) {
+                                        toast.error("You cannot remove yourself from the group.")
+                                        return
+                                    }
                                     const response = await groupService.removeUserFromGroup({
                                         groupId: store?.groupId,
                                         userId: currentRow?.id,

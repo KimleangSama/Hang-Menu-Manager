@@ -37,12 +37,12 @@ export const menuColumns = (categories: CategoryResponse[]): ColumnDef<MenuRespo
         ),
         cell: ({ row }) => {
             const { image, name } = row.original
-            if (!image) return (<img src={`https://ui-avatars.com/api/?name=` + name} alt='Menu Image' className='rounded w-8 h-8' />)
+            if (!image || image === undefined) return (<img src={`https://ui-avatars.com/api/?name=` + name} alt='Menu Image' className='rounded w-8 h-8' />)
             return (
                 <Dialog>
                     <DialogTrigger asChild>
                         <div className='flex items-center justify-start cursor-pointer'>
-                            <Image
+                            <img
                                 src={API_IMAGE_URL + image}
                                 alt='Menu Image'
                                 width={32}
@@ -135,9 +135,9 @@ export const menuColumns = (categories: CategoryResponse[]): ColumnDef<MenuRespo
             const { user } = useAuth();
             const store = useStoreResponse(state => state.store)
             const { categoryId } = row.original;
-            const disabled = user?.roles?.some(role => role.name === 'admin')
-                || user?.roles?.some(role => role.name === 'manager')
-                || user?.roles?.some(role => role.name === 'staff');
+            const disabled = !user?.roles?.some(role => role.name === 'admin')
+                || !user?.roles?.some(role => role.name === 'manager')
+                || !user?.roles?.some(role => role.name === 'staff');
             return (
                 <Select
                     disabled={disabled}
