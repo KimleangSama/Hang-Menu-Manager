@@ -135,12 +135,12 @@ export const menuColumns = (categories: CategoryResponse[]): ColumnDef<MenuRespo
             const { user } = useAuth();
             const store = useStoreResponse(state => state.store)
             const { categoryId } = row.original;
-            const disabled = !user?.roles?.some(role => role.name === 'admin')
-                || !user?.roles?.some(role => role.name === 'manager')
-                || !user?.roles?.some(role => role.name === 'staff');
+            const enabled = user?.roles?.some(role => role.name === 'admin')
+                || user?.roles?.some(role => role.name === 'manager')
+                || user?.roles?.some(role => role.name === 'staff');
             return (
                 <Select
-                    disabled={disabled}
+                    disabled={!enabled}
                     defaultValue={categoryId}
                     onValueChange={(value) => {
                         if (!store) return;
